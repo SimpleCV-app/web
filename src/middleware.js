@@ -7,6 +7,7 @@ export const onRequest = defineMiddleware(async ({ request, locals }, next) => {
   try {
     const { account } = createSessionClient(request);
     locals.user = await account.get();
+    locals.account = account
   } catch {}
 
   return next();
