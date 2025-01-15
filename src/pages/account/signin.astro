@@ -38,8 +38,14 @@ if (Astro.request.method === "POST") {
         return Astro.redirect("/account");
     } catch (error) {
         if (error instanceof AppwriteException) {
-            errors += error.message;
-            console.error(error);
+            console.log(error)
+            switch (error.type) {
+                case "user_invalid_credentials":
+                    errors = "Invalid credentials. Please check the email and password.";
+                    break;
+                case "user_blocked":
+                    errors = "Your account has been deactivated by an Administrator."
+            }
         } else {
             console.error(error);
         }
