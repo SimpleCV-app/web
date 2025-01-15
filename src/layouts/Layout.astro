@@ -1,3 +1,10 @@
+---
+const { user } = Astro.locals;
+
+var profile_picture = ""
+if (user) { var profile_picture = "https://cloud.appwrite.io/v1/avatars/initials?name=" + user.name }
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -5,10 +12,85 @@
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>CV Buddy</title>
 	</head>
 	<body>
+		<!-- Navbar Start -->
+		<div class="navbar bg-base-100">
+			<div class="navbar-start">
+			  <div class="dropdown">
+				<div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+				  <svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="h-5 w-5"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor">
+					<path
+					  stroke-linecap="round"
+					  stroke-linejoin="round"
+					  stroke-width="2"
+					  d="M4 6h16M4 12h16M4 18h7" />
+				  </svg>
+				</div>
+				<ul
+				  tabindex="0"
+				  class="menu menu-sm dropdown-content bg-base-200 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+				  <li><a href="/">Home</a></li>
+				  {user && (user.labels.includes('admin') && 
+				  <li>
+					<details>
+						<summary>Admin <span class="badge badge-accent">Admin Only</span></summary>
+						<ul>
+						  <li><a href="/admin/dashboard">Dashboard</a></li>
+						</ul>
+					  </details>
+				  </li>
+				  )}
+				</ul>
+			  </div>
+			</div>
+			<div class="navbar-center">
+			  <a href="/" class="btn btn-ghost text-xl">CV Buddy</a>
+			</div>
+			<div class="navbar-end">
+				{user ? <div class="dropdown dropdown-end">
+					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+					  <div class="w-10 rounded-full">
+						<img
+						  alt="Tailwind CSS Navbar component"
+						  src={profile_picture} />
+					  </div>
+					</div>
+					<ul
+					  tabindex="0"
+					  class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+					  <li>
+						<a class="justify-between">
+						  Profile
+						  <span class="badge badge-error">TBC</span>
+						</a>
+					  </li>
+					  <li><a href="/account">Manage Account</a></li>
+					  <li><a href="/account/signout">Sign Out</a></li>
+					</ul>
+				</div> : <a class="btn btn-primary" href="/account/signin">Sign In</a>}
+			</div>
+		  </div>
+		<!-- Navbar End -->
 		<slot />
+
+		<!-- Footer Start -->
+		<footer class="footer footer-center bg-base-200 text-base-content rounded p-10 absolute inset-x-0 bottom-0 ">
+			<nav class="grid grid-flow-col gap-4">
+			  <a class="link link-hover">About us</a>
+			  <a class="link link-hover">Contact</a>
+			</nav>
+			<aside>
+			  <p>Copyright © {new Date().getFullYear()} - Alfie Barlow</p>
+			</aside>
+		  </footer>
+		<!-- Footer End -->
 	</body>
 </html>
 

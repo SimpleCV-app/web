@@ -1,0 +1,137 @@
+---
+import { date } from "astro:schema";
+import Layout from "../../layouts/Layout.astro";
+// Redirect the user if not signed in
+const { user } = Astro.locals;
+if (!user) {
+    return Astro.redirect("/account/signup");
+}
+
+var profile_picture =
+    "https://cloud.appwrite.io/v1/avatars/initials?name=" + user.name;
+
+if (Astro.request.method === "POST") {
+    var data = await Astro.request.formData()
+    if (data.get("email")) {
+        // change email
+    } else if (data.get("name")) {
+        // change name
+    } else if (data.get("password")) {
+        // change password
+    }
+}
+---
+
+<Layout>
+    <div class="flex items-center justify-center">
+        <div class="w-max max-w-4xl bg-base-300 rounded-lg shadow-md p-6">
+            <div tabindex="0" role="button" class="avatar">
+                <div class="w-24 rounded-full">
+                    <img
+                        alt="Tailwind CSS Navbar component"
+                        src={profile_picture}
+                    />
+                </div>
+                <h2 class="text-7xl font-semibold text-white p-2">{user.name} </h2>
+                <span class="badge m-auto text-lg p-3">{user.$id}</span>
+            </div>
+            <div class="grid grid-cols-2 flex-col">
+                <div class="pr-3">
+                    <div class="label">
+                        <span class="label-text">Email</span>
+                    </div>
+                    <input type="text" placeholder={user.email} class="input input-bordered w-max max-w-xs" disabled />
+                    <button class="btn btn-primary" onclick="email_modal.showModal()">Change</button>
+
+                    <dialog id="email_modal" class="modal">
+                        <div class="modal-box">
+                        <h3 class="text-lg font-bold">Change your email</h3>
+                        <form method="POST" class="pt-2">
+                            <input
+                            id="email" name="email" placeholder="Email" type="email" 
+                            class="px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            required
+                            />
+                            <button type="submit" class="py-2 px-4 bg-indigo-500 text-black rounded-md hover:bg-indigo-600 font-bold">
+                                Change Email
+                            </button>
+                        </form>
+                        </div>
+                        <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                        </form>
+                    </dialog>
+                </div>
+                <div>
+                    <div class="label">
+                        <span class="label-text">Name</span>
+                    </div>
+                    <input type="text" placeholder={user.name} class="input input-bordered w-max max-w-xs" disabled />
+                    <button class="btn btn-primary" onclick="name_modal.showModal()">Change</button>
+
+                    <dialog id="name_modal" class="modal">
+                        <div class="modal-box">
+                        <h3 class="text-lg font-bold">Change your Name</h3>
+                        <form method="POST" class="pt-2">
+                            <input
+                            id="name" name="name" placeholder="Name" type="text" 
+                            class="px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            required
+                            />
+                            <button type="submit" class="py-2 px-4 bg-indigo-500 text-black rounded-md hover:bg-indigo-600 font-bold">
+                                Change Name
+                            </button>
+                        </form>
+                        </div>
+                        <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                        </form>
+                    </dialog>
+                </div>
+                <div class="pr-3">
+                    <div class="label">
+                        <span class="label-text">Password</span>
+                    </div>
+                    <button class="btn btn-primary w-full py-2 px-4" onclick="password_modal.showModal()">Change</button>
+
+                    <dialog id="password_modal" class="modal">
+                        <div class="modal-box">
+                        <h3 class="text-lg font-bold">Change your Password</h3>
+                        <form method="POST" class="pt-2">
+                            <input
+                            id="password" name="password" placeholder="password" type="password" 
+                            class="px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                            required
+                            />
+                            <button type="submit" class="py-2 px-4 bg-indigo-500 text-black rounded-md hover:bg-indigo-600 font-bold">
+                                Change Password
+                            </button>
+                        </form>
+                        </div>
+                        <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                        </form>
+                    </dialog>
+                </div>
+                <div>
+                    <div class="label">
+                        <span class="label-text">Delete</span>
+                    </div>
+                    <button class="btn btn-error w-full py-2 px-4 text-black rounded-md" onclick="delete_modal.showModal()">Delete My Account</button>
+
+                    <dialog id="delete_modal" class="modal">
+                        <div class="modal-box">
+                        <h3 class="text-lg font-bold">Delete your Account</h3>
+                        <form method="POST" class="pt-2">
+                            <button class="btn btn-error w-full py-2 px-4 text-black rounded-md" type="submit">Delete My Account</button>
+                        </form>
+                        </div>
+                        <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                        </form>
+                    </dialog>
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>

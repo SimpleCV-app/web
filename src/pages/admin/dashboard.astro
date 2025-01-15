@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { createAdminClient } from '../../server/appwrite';
+
+const { user } = Astro.locals;
+if (!user || !user.labels.includes('admin')) {
+    return Astro.redirect("/");;
+}
+
+const { users } = createAdminClient();
+
+---
+
+<Layout>
+    <div class="flex items-center justify-center ">
+        <div class="overflow-x-auto w-max rounded-lg shadow-md">
+            <h1 class="bg-base-300 text-center text-2xl font-bold py-3">User Table</h1>
+            <table class="table table-xs table-pin-rows table-pin-cols [&_*]:bg-base-300">
+            <thead>
+                <tr>
+                <th>ID</th>
+                <td>Name</td>
+                <td>Created At</td>
+                <td>Updated At</td>
+                <td>Email</td>
+                <td>Labels</td>
+                <td>Active</td>
+                <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                {users.list().then((response) => {
+                    return response.users.map((user_record) => (
+                        <tr>
+                            <th class="p-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="avatar">
+                                    <div class="mask mask-circle h-12 w-12">
+                                        <img src={"https://cloud.appwrite.io/v1/avatars/initials?name=" + user_record.name} alt="Avatar" />
+                                    </div>
+                                    </div>
+                                    <div>
+                                    <div>{user_record.$id}</div>
+                                    </div>
+                                </div>
+                            </th>
+                            <td>{user_record.name}</td>
+                            <td>{user_record.$createdAt}</td>
+                            <td>{user_record.$updatedAt}</td>
+                            <td>{user_record.email}</td>
+                            <td>{user_record.labels.map((label) => (label + ", ")) }</td>
+                            <td>{user_record.status ? <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg> : <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>}</td>
+                            <td><a class="btn btn-primary btn-outline" href={"/admin/manage/user/" + user_record.$id}>Manage</a></td>
+                        </tr>
+                    ))
+                })}
+            </tbody>
+            </table>
+        </div>
+    </div>
+</Layout>
