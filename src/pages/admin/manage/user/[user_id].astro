@@ -63,7 +63,7 @@ if (Astro.request.method === "POST") {
 
                         <dialog id="email_modal" class="modal">
                             <div class="modal-box">
-                                <h3 class="text-lg font-bold">Change your email</h3>
+                                <h3 class="text-lg font-bold">Edit Email</h3>
                                 <form method="POST" class="pt-2">
                                     <input type="hidden" name="type" id="type" value="email"/>
                                     <input
@@ -92,7 +92,7 @@ if (Astro.request.method === "POST") {
 
                         <dialog id="name_modal" class="modal">
                             <div class="modal-box">
-                                <h3 class="text-lg font-bold">Change your Name</h3>
+                                <h3 class="text-lg font-bold">Edit Name</h3>
                                 <form method="POST" class="pt-2">
                                     <input type="hidden" name="type" id="type" value="name"/>
                                     <input
@@ -120,7 +120,7 @@ if (Astro.request.method === "POST") {
 
                         <dialog id="password_modal" class="modal">
                             <div class="modal-box">
-                                <h3 class="text-lg font-bold">Change your Password</h3>
+                                <h3 class="text-lg font-bold">Edit Password</h3>
                                 <form method="POST" class="pt-2">
                                     <input type="hidden" name="type" id="type" value="password"/>
                                     <input
@@ -148,7 +148,7 @@ if (Astro.request.method === "POST") {
 
                         <dialog id="label_modal" class="modal">
                             <div class="modal-box">
-                                <h3 class="text-lg font-bold">Change your Password</h3>
+                                <h3 class="text-lg font-bold">Edit Labels</h3>
                                 <p>Please use Appwrite dashboard</p>
                             </div>
                             <form method="dialog" class="modal-backdrop">
@@ -159,14 +159,14 @@ if (Astro.request.method === "POST") {
                     <!-- Deactivate -->
                     <div class="pr-3">
                         <div class="label">
-                            <span class="label-text">{managed_user.status ? 'Deactivate' : 'Activate'}</span>
+                            <span class="label-text">Activation</span>
                         </div>
 
                         <button class="btn btn-error w-full py-2 px-4 text-black rounded-md" onclick="deactivate_modal.showModal()">{managed_user.status ? 'Deactivate' : 'Activate'} Account</button>
 
                         <dialog id="deactivate_modal" class="modal">
                             <div class="modal-box">
-                                <h3 class="text-lg font-bold">{managed_user.status ? 'Deactivate' : 'Activate'} Account</h3>
+                                <h3 class="text-lg font-bold">Edit Activation Status</h3>
                                 <form method="POST" class="pt-2">
                                     <input type="hidden" name="type" id="type" value="deactivate"/>
                                     <button class="btn btn-error w-full py-2 px-4 text-black rounded-md" type="submit">{managed_user.status ? 'Deactivate' : 'Activate'} Account</button>
@@ -180,7 +180,7 @@ if (Astro.request.method === "POST") {
                     <!-- Delete -->
                     <div>
                         <div class="label">
-                            <span class="label-text">Delete</span>
+                            <span class="label-text">Delete Account</span>
                         </div>
 
                         <button class="btn btn-error w-full py-2 px-4 text-black rounded-md" onclick="delete_modal.showModal()">Delete Account</button>
