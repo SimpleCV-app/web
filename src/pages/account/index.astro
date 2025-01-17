@@ -1,6 +1,7 @@
 ---
 import { AppwriteException, Query } from 'node-appwrite';
 import Layout from '../../layouts/Layout.astro';
+import { createAdminClient } from '../../server/appwrite';;
 
 const { user, account } = Astro.locals;
 if (!user) {
@@ -23,7 +24,9 @@ if (Astro.request.method === "POST") {
                 account.updatePassword(data.get("password")!.toString(), data.get("old-password")!.toString());
                 break;
             case 'delete':
-                errors = "Deleting is not currently avaliable. (im lazy)"
+                const { users } = createAdminClient()
+                users.delete(user.$id)
+                Astro.redirect("/account/signout")
                 break;
         }
     } catch (error) {
