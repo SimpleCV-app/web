@@ -80,7 +80,9 @@ if (Astro.request.method === "POST") {
                     {
                         "enabled": false
                     },
-                    []
+                    [
+                        Permission.read(Role.user(user_id!.toString()))
+                    ]
                 )
             }
             break;
