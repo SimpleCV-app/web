@@ -4,7 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import { createAdminClient, SESSION_COOKIE } from '../../server/appwrite';import { redirectToDefaultLocale } from 'astro:i18n';
 ;
 
-const { user, account } = Astro.locals;
+const { user, account, databases } = Astro.locals;
 if (!user) {
     return Astro.redirect("/account/signin");
 }
@@ -26,6 +26,11 @@ if (Astro.request.method === "POST") {
                 break;
             case 'delete':
                 const { users } = createAdminClient()
+                databases.deleteDocument(
+                    import.meta.env.CV_DB0_ID,
+                    "user",
+                    user.$id,
+                )
                 users.delete(user.$id)
                 Astro.cookies.delete(SESSION_COOKIE);
                 return Astro.redirect("/");
