@@ -23,6 +23,7 @@ const { users } = createAdminClient();
                 <td>Created At</td>
                 <td>Updated At</td>
                 <td>Email</td>
+                <td>Verified</td>
                 <td>Labels</td>
                 <td>Active</td>
                 <td></td>
@@ -48,6 +49,7 @@ const { users } = createAdminClient();
                             <td>{user_record.$createdAt}</td>
                             <td>{user_record.$updatedAt}</td>
                             <td>{user_record.email}</td>
+                            <td>{user_record.emailVerification ? <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg> : <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>}</td>
                             <td>{user_record.labels.map((label) => (label + ", ")) }</td>
                             <td>{user_record.status ? <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg> : <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>}</td>
                             <td><a class="btn btn-primary btn-outline" href={"/admin/manage/user/" + user_record.$id}>Manage</a></td>
