@@ -63,7 +63,7 @@ if (Astro.request.method === "POST") {
                             <span class="label-text">
                                 Email 
                                 {
-                                    user.emailVerification ? 
+                                    managed_user.emailVerification ? 
                                     <span class="badge badge-success">Verified</span>
                                     :
                                     <span class="badge badge-error">Unverified</span>
