@@ -18,34 +18,31 @@ const { users } = createAdminClient();
             <table class="table table-xs table-pin-rows table-pin-cols [&_*]:bg-base-300">
             <thead>
                 <tr>
-                <th>ID</th>
-                <td>Name</td>
-                <td>Created At</td>
-                <td>Updated At</td>
-                <td>Email</td>
-                <td>Verified</td>
-                <td>Labels</td>
-                <td>Active</td>
-                <td></td>
+                    <th></th>
+                    <td>Name</td>
+                    <td>ID</td>
+                    <td>Created At</td>
+                    <td>Updated At</td>
+                    <td>Email</td>
+                    <td>Verified</td>
+                    <td>Labels</td>
+                    <td>Active</td>
+                    <td></td>
                 </tr>
             </thead>
             <tbody>
                 {users.list().then((response) => {
                     return response.users.map((user_record) => (
                         <tr>
-                            <th class="p-2">
-                                <div class="flex items-center gap-3">
-                                    <div class="avatar">
-                                    <div class="mask mask-circle h-12 w-12">
-                                        <img src={"https://cloud.appwrite.io/v1/avatars/initials?name=" + user_record.name} alt="Avatar" />
-                                    </div>
-                                    </div>
-                                    <div>
-                                    <div>{user_record.$id}</div>
-                                    </div>
+                            <th>
+                                <div class="avatar">
+                                        <div class="mask mask-circle h-12 w-12">
+                                            <img src={"https://cloud.appwrite.io/v1/avatars/initials?name=" + user_record.name} alt="Avatar" />
+                                        </div>
                                 </div>
                             </th>
                             <td>{user_record.name}</td>
+                            <td>{user_record.$id}</td>
                             <td>{user_record.$createdAt}</td>
                             <td>{user_record.$updatedAt}</td>
                             <td>{user_record.email}</td>
