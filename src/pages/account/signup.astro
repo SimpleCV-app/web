@@ -1,6 +1,6 @@
 ---
 import { SESSION_COOKIE, createAdminClient } from "../../server/appwrite.js";
-import { ID, AppwriteException } from "node-appwrite";
+import { ID, AppwriteException, Permission, Role } from "node-appwrite";
 import Layout from "../../layouts/Layout.astro";
 
 var errors = ""
@@ -12,11 +12,11 @@ if (Astro.request.method === "POST") {
     const name = data.get("name")!.toString();
 
     // Create the admin client
-    const { account } = createAdminClient();
+    const { account, databases } = createAdminClient();
 
     try {
         // Create the email password session
-        await account.create(ID.unique(), email, password, name);
+        const new_account = await account.create(ID.unique(), email, password, name);
         const session = await account.createEmailPasswordSession(email, password);
 
         // Set the session cookie
@@ -27,6 +27,19 @@ if (Astro.request.method === "POST") {
             secure: true,
             httpOnly: true,
         });
+
+        databases.createDocument(
+            import.meta.env.CV_DB0_ID,
+            "user",
+            new_account.$id,
+            {
+                "enabled": true
+            },
+            [
+                Permission.write(Role.user(new_account.$id)),
+                Permission.read(Role.user(new_account.$id))
+            ]
+        )
 
         // Redirect to the account page
         return Astro.redirect("/account");
