@@ -1,7 +1,8 @@
 ---
 import { AppwriteException, Query } from 'node-appwrite';
 import Layout from '../../layouts/Layout.astro';
-import { createAdminClient, SESSION_COOKIE } from '../../server/appwrite';;
+import { createAdminClient, SESSION_COOKIE } from '../../server/appwrite';import { redirectToDefaultLocale } from 'astro:i18n';
+;
 
 const { user, account } = Astro.locals;
 if (!user) {
@@ -27,8 +28,9 @@ if (Astro.request.method === "POST") {
                 const { users } = createAdminClient()
                 users.delete(user.$id)
                 Astro.cookies.delete(SESSION_COOKIE);
-                break;
+                return Astro.redirect("/");
         }
+        return Astro.redirect("/account")
     } catch (error) {
         if (error instanceof AppwriteException) {
             console.log(error)

@@ -33,8 +33,9 @@ if (Astro.request.method === "POST") {
             break;
         case 'delete':
             users.delete(user_id!.toString());
-            break;
+            return Astro.redirect("/admin/dashboard");
     }
+    return Astro.redirect(Astro.url.pathname)
 }
 ---
 
