@@ -70,7 +70,19 @@ if (Astro.request.method === "POST") {
                     <!-- Email -->
                     <div class="pr-3">
                         <div class="label">
-                            <span class="label-text">Email</span>
+                            <span class="label-text">
+                                Email 
+                                {
+                                    user.emailVerification ? 
+                                    <span class="badge badge-success">Verified</span>
+                                    :
+                                    <a href="/account/verification">
+                                        <div class="tooltip" data-tip="Verify your email.">
+                                            <span class="badge badge-error">Unverified</span>
+                                        </div>
+                                    </a>
+                                }
+                            </span>
                         </div>
                         <input type="text" placeholder={user.email} class="input input-bordered w-max max-w-xs" disabled />
                         <button class="btn btn-primary" onclick="email_modal.showModal()">Change</button>

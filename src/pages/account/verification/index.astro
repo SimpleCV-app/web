@@ -1,0 +1,28 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const { user, account } = Astro.locals;
+if (!user || user.emailVerification) {
+  return Astro.redirect("/account");
+}
+
+await account.createVerification(
+    Astro.url.origin + "/account/verification/confirm"
+);
+
+---
+
+<Layout>
+    <div class="flex items-center justify-center">
+        <div>
+            <h1 class="text-4xl font-bold">Please check your email</h1>
+            
+            <div class="flex items-center justify-center pt-3">
+                <div>
+                    <p>We've sent a verification email to your inbox.</p>
+                    <p>Please follow the link to confirm your email.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>

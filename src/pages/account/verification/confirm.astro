@@ -1,0 +1,15 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const { user, account } = Astro.locals;
+if (!user || user.emailVerification) {
+  return Astro.redirect("/account");
+}
+
+await account.updateVerification(
+    Astro.url.searchParams.get("userId"),
+    Astro.url.searchParams.get("secret")
+);
+
+return Astro.redirect("/account")
+---

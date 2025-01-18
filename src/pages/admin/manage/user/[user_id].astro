@@ -28,6 +28,9 @@ if (Astro.request.method === "POST") {
         case 'password':
             users.updatePassword(user_id!.toString(), data.get("password")!.toString());
             break;
+        case 'verification':
+            users.updateEmailVerification(user_id!.toString(), !managed_user.emailVerification);
+            break;
         case 'deactivate':
             users.updateStatus(user_id!.toString(), !managed_user.status);
             break;
@@ -57,7 +60,19 @@ if (Astro.request.method === "POST") {
                     <!-- Email -->
                     <div class="pr-3">
                         <div class="label">
-                            <span class="label-text">Email</span>
+                            <span class="label-text">
+                                Email 
+                                {
+                                    user.emailVerification ? 
+                                    <span class="badge badge-success">Verified</span>
+                                    :
+                                    <a href="/account/verification">
+                                        <div class="tooltip" data-tip="Verify your email.">
+                                            <span class="badge badge-error">Unverified</span>
+                                        </div>
+                                    </a>
+                                }
+                            </span>
                         </div>
                         <input type="text" placeholder={managed_user.email} class="input input-bordered w-max max-w-xs" disabled />
                         <button class="btn btn-primary" onclick="email_modal.showModal()">Change</button>
@@ -157,8 +172,29 @@ if (Astro.request.method === "POST") {
                             </form>
                         </dialog>
                     </div>
-                    <!-- Deactivate -->
+                    <!-- Verification -->
                     <div class="pr-3">
+                        <div class="label">
+                            <span class="label-text">Verification</span>
+                        </div>
+
+                        <button class="btn btn-primary w-full py-2 px-4 text-black rounded-md" onclick="verification_modal.showModal()">{managed_user.emailVerification ? 'Unverify' : 'Verify'} Account</button>
+
+                        <dialog id="verification_modal" class="modal">
+                            <div class="modal-box">
+                                <h3 class="text-lg font-bold">Edit Verification Status</h3>
+                                <form method="POST" class="pt-2">
+                                    <input type="hidden" name="type" id="type" value="verification"/>
+                                    <button class="btn btn-primary w-full py-2 px-4 text-black rounded-md" type="submit">{managed_user.emailVerification ? 'Unverify' : 'Verify'} Account</button>
+                                </form>
+                            </div>
+                            <form method="dialog" class="modal-backdrop">
+                                <button>close</button>
+                            </form>
+                        </dialog>
+                    </div>
+                    <!-- Deactivate -->
+                    <div>
                         <div class="label">
                             <span class="label-text">Activation</span>
                         </div>
@@ -179,7 +215,7 @@ if (Astro.request.method === "POST") {
                         </dialog>
                     </div>
                     <!-- Delete -->
-                    <div>
+                    <div class="pr-3">
                         <div class="label">
                             <span class="label-text">Delete Account</span>
                         </div>
