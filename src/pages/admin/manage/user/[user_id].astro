@@ -58,7 +58,6 @@ if (Astro.request.method === "POST") {
             }
 
             if (data.get("enabled") && !db_record!.enabled) {
-                console.log("enabled")
                 databases.updateDocument(
                     import.meta.env.CV_DB0_ID,
                     "user",
@@ -72,7 +71,6 @@ if (Astro.request.method === "POST") {
                     ]
                 )
             } else if (!data.get("enabled") && db_record!.enabled) {
-                console.log("disabled")
                 databases.updateDocument(
                     import.meta.env.CV_DB0_ID,
                     "user",
