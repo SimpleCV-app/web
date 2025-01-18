@@ -7,13 +7,40 @@ if (!user || !user.labels.includes('admin')) {
     return Astro.redirect("/");;
 }
 
-const { users } = createAdminClient();
+const { users, databases } = createAdminClient();
 
+const total_users = (await users.list()).total
+const total_views = "N/A"
+const total_pages = (await databases.listDocuments(import.meta.env.CV_DB0_ID, 'pages')).total
 ---
 
 <Layout>
     <div class="flex items-center justify-center ">
-        <div class="overflow-x-auto w-max rounded-lg shadow-md">
+        <div class="overflow-x-auto w-max rounded-lg shadow-md [&_*]:bg-base-300">
+            <div class="stats shadow bg-base-300">
+                <div class="stat">
+                  <div class="stat-title">Users</div>
+                  <div class="stat-value">{total_users}</div>
+                  <div class="stat-desc">All Time</div>
+                </div>
+              
+                <div class="stat">
+                  <div class="stat-title">Views</div>
+                  <div class="stat-value">{total_views}</div>
+                  <div class="stat-desc">Across All Pages</div>
+                </div>
+              
+                <div class="stat">
+                  <div class="stat-title">Pages</div>
+                  <div class="stat-value">{total_pages}</div>
+                  <div class="stat-desc">All Time</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-center pt-4">
+        <div class="overflow-x-auto w-max rounded-lg shadow-md bg-base-300">
             <h1 class="bg-base-300 text-center text-2xl font-bold py-3">User Table</h1>
             <table class="table table-xs table-pin-rows table-pin-cols [&_*]:bg-base-300">
             <thead>
