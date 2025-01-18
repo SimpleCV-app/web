@@ -5,9 +5,10 @@ import { createSessionClient } from "./server/appwrite";
 
 export const onRequest = defineMiddleware(async ({ request, locals }, next) => {
   try {
-    const { account } = createSessionClient(request);
+    const { account, databases } = createSessionClient(request);
     locals.user = await account.get();
     locals.account = account
+    locals.databases = databases
   } catch {}
 
   return next();

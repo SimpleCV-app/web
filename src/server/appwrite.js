@@ -1,6 +1,6 @@
 // src/server/appwrite.js
 
-import { Client, Account, Avatars, Users } from "node-appwrite";
+import { Client, Account, Avatars, Users, Databases } from "node-appwrite";
 
 // The name of your cookie that will store the session
 export const SESSION_COOKIE = "cvb-session-token";
@@ -23,6 +23,9 @@ export function createAdminClient() {
     get avatars() {
         return new Avatars(client);
     },
+    get databases() {
+      return new Databases(client);
+    }
   };
 }
 
@@ -47,8 +50,11 @@ export function createSessionClient(request) {
       return new Account(client);
     },
     get avatars() {
-        return new Avatars(client);
+      return new Avatars(client);
     },
+    get databases() {
+      return new Databases(client);
+    }
   };
 }
 

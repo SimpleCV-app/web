@@ -1,19 +1,22 @@
 ---
-import { Query } from 'node-appwrite';
+import { Permission, Query, Role } from 'node-appwrite';
 import Layout from '../../../../layouts/Layout.astro';
 import { createAdminClient } from '../../../../server/appwrite';
-import type { ACTION_ERROR_CODES } from 'astro:actions';
-import { record } from 'astro:schema';
 
 const { user } = Astro.locals;
 if (!user || !user.labels.includes('admin')) {
     return Astro.redirect("/");;
 }
 
-const { users } = createAdminClient();
+const { users, databases } = createAdminClient();
 const { user_id } = Astro.params!;
 
 const managed_user = (await users.list([Query.equal("$id", [user_id!.toString()])])).users[0]
+const db_response = await databases.listDocuments(import.meta.env.CV_DB0_ID, "user", [Query.equal("$id", [user_id!.toString()])])
+var db_record = null
+if (db_response.total == 1) {
+    db_record = db_response.documents[0]
+}
 
 if (Astro.request.method === "POST") {
     var data = await Astro.request.formData()
@@ -30,6 +33,56 @@ if (Astro.request.method === "POST") {
             break;
         case 'verification':
             users.updateEmailVerification(user_id!.toString(), !managed_user.emailVerification);
+            break;
+        case 'initialisation':
+            databases.createDocument(
+                import.meta.env.CV_DB0_ID,
+                "user",
+                user_id!.toString(),
+                {
+                    "enabled": true
+                },
+                [
+                    Permission.write(Role.user(user_id!.toString())),
+                    Permission.read(Role.user(user_id!.toString()))
+                ]
+            )
+            break;
+        case 'initialisation_manage':
+            if (data.get('delete')) {
+                databases.deleteDocument(
+                    import.meta.env.CV_DB0_ID,
+                    "user",
+                    user_id!.toString()
+                )
+            }
+
+            if (data.get("enabled") && !db_record!.enabled) {
+                console.log("enabled")
+                databases.updateDocument(
+                    import.meta.env.CV_DB0_ID,
+                    "user",
+                    user_id!.toString(),
+                    {
+                        "enabled": true
+                    },
+                    [
+                        Permission.write(Role.user(user_id!.toString())),
+                        Permission.read(Role.user(user_id!.toString()))
+                    ]
+                )
+            } else if (!data.get("enabled") && db_record!.enabled) {
+                console.log("disabled")
+                databases.updateDocument(
+                    import.meta.env.CV_DB0_ID,
+                    "user",
+                    user_id!.toString(),
+                    {
+                        "enabled": false
+                    },
+                    []
+                )
+            }
             break;
         case 'deactivate':
             users.updateStatus(user_id!.toString(), !managed_user.status);
@@ -190,8 +243,65 @@ if (Astro.request.method === "POST") {
                             </form>
                         </dialog>
                     </div>
+                    <!-- Initialise -->
+                    {
+                        db_response.total == 1
+                        ?
+                        (
+                        <div>
+                                <div class="label">
+                                    <span class="label-text">Database</span>
+                                </div>
+
+                                <button class="btn btn-primary w-full py-2 px-4 text-black rounded-md" onclick="initialisation_manage_modal.showModal()">Manage Record</button>
+                                <dialog id="initialisation_manage_modal" class="modal">
+                                    <div class="modal-box">
+                                        <h3 class="text-lg font-bold">Manage Record</h3>
+                                        <form method="POST" class="pt-2">
+                                            <input type="hidden" name="type" id="type" value="initialisation_manage"/>
+                                            <label class="label cursor-pointer">
+                                                <span class="label-text">Enabled</span>
+                                                <input type="checkbox" class="checkbox" checked={db_record?.enabled} name="enabled" value="true"/>
+                                            </label>
+                                            <label class="label cursor-pointer">
+                                                <span class="label-text">Delete</span>
+                                                <input type="checkbox" class="checkbox" name="delete" value="true"/>
+                                            </label>
+                                            <button class="btn btn-primary w-full py-2 px-4 text-black rounded-md" type="submit">Save</button>
+                                        </form>
+                                    </div>
+                                    <form method="dialog" class="modal-backdrop">
+                                        <button>close</button>
+                                    </form>
+                                </dialog>
+                        </div>
+                        )
+                        :
+                        (
+                        <div>
+                            <div class="label">
+                                <span class="label-text">Database</span>
+                            </div>
+
+                            <button class="btn btn-primary w-full py-2 px-4 text-black rounded-md" onclick="initialisation_modal.showModal()">Initialise Account For Database</button>
+
+                            <dialog id="initialisation_modal" class="modal">
+                                <div class="modal-box">
+                                    <h3 class="text-lg font-bold">Initialise Account For Database</h3>
+                                    <form method="POST" class="pt-2">
+                                        <input type="hidden" name="type" id="type" value="initialisation"/>
+                                        <button class="btn btn-primary w-full py-2 px-4 text-black rounded-md" type="submit">Initialise Account For Database</button>
+                                    </form>
+                                </div>
+                                <form method="dialog" class="modal-backdrop">
+                                    <button>close</button>
+                                </form>
+                            </dialog>
+                        </div>
+                        )
+                    }
                     <!-- Deactivate -->
-                    <div>
+                    <div class="pr-3">
                         <div class="label">
                             <span class="label-text">Activation</span>
                         </div>
@@ -212,7 +322,7 @@ if (Astro.request.method === "POST") {
                         </dialog>
                     </div>
                     <!-- Delete -->
-                    <div class="pr-3">
+                    <div>
                         <div class="label">
                             <span class="label-text">Delete Account</span>
                         </div>

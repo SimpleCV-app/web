@@ -6,6 +6,7 @@ declare namespace App {
   interface Locals {
     user?: Models.User<Models.Preferences>;
     account?: Models.Account;
+    databases?: Models.Databases;
   }
 }
 
