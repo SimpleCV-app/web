@@ -66,11 +66,8 @@ if (Astro.request.method === "POST") {
                                     user.emailVerification ? 
                                     <span class="badge badge-success">Verified</span>
                                     :
-                                    <a href="/account/verification">
-                                        <div class="tooltip" data-tip="Verify your email.">
-                                            <span class="badge badge-error">Unverified</span>
-                                        </div>
-                                    </a>
+                                    <span class="badge badge-error">Unverified</span>
+                            
                                 }
                             </span>
                         </div>
