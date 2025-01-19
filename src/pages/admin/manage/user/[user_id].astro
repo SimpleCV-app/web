@@ -26,6 +26,14 @@ if (Astro.request.method === "POST") {
         case 'password':
             users.updatePassword(user_id!.toString(), data.get("password")!.toString());
             break;
+        case 'label_delete':
+            users.updateLabels(user_id!.toString(), managed_user.labels.filter(item => item !== data.get("label_name")!.toString()))
+            break;
+        case 'label_add':
+            managed_user.labels.push(data.get("label_name")!.toString())
+            console.log(managed_user.labels)
+            users.updateLabels(user_id!.toString(), managed_user.labels)
+            break;
         case 'verification':
             users.updateEmailVerification(user_id!.toString(), !managed_user.emailVerification);
             break;
@@ -215,7 +223,21 @@ if (Astro.request.method === "POST") {
                         <dialog id="label_modal" class="modal">
                             <div class="modal-box">
                                 <h3 class="text-lg font-bold">Edit Labels</h3>
-                                <p>Please use Appwrite dashboard</p>
+                                {managed_user.labels.map((label) => (
+                                    <form method="POST" class="py-1">
+                                        <input type="hidden" name="type" id="type" value="label_delete"/>
+                                        <input type="text" value={label} class="input input-bordered w-max max-w-xs" disabled/>
+                                        <input type="hidden" name="label_name" id="label_name" value={label}/>
+                                        <button type="submit" class="btn btn-primary">-</button>
+                                    </form>
+                                ))}
+                                <div class="pt-6">
+                                    <form method="POST" class="py-1">
+                                        <input type="hidden" name="type" id="type" value="label_add"/>
+                                        <input type="text" name="label_name" id="label_name" class="input input-bordered w-max max-w-xs"/>
+                                        <button type="submit" class="btn btn-primary">+</button>
+                                    </form>
+                                </div>
                             </div>
                             <form method="dialog" class="modal-backdrop">
                                 <button>close</button>
