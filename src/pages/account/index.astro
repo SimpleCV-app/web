@@ -1,6 +1,6 @@
 ---
 import { AppwriteException, Query } from 'node-appwrite';
-import Layout from '../../layouts/Layout.astro';
+import AuthLayout from '../../layouts/AuthLayout.astro';
 import { createAdminClient, SESSION_COOKIE } from '../../server/appwrite';import { redirectToDefaultLocale } from 'astro:i18n';
 ;
 
@@ -57,7 +57,7 @@ if (Astro.request.method === "POST") {
 }
 ---
 
-<Layout>
+<AuthLayout>
     <div class="flex items-center justify-center">
         <div class="w-max max-w-4xl bg-base-300 rounded-lg shadow-md p-6">
             <div tabindex="0" role="button" class="avatar">
@@ -99,15 +99,15 @@ if (Astro.request.method === "POST") {
                                     <input type="hidden" name="type" id="type" value="email"/>
                                     <input
                                     id="email" name="email" placeholder="Email" type="email" 
-                                    class="w-max px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    class="input input-bordered w-max max-w-xs"
                                     required
                                     />
                                     <div class="pt-1"><input
                                         id="password" name="password" placeholder="Password" type="password" 
-                                        class="px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                        class="input input-bordered w-max max-w-xs"
                                         required
                                         /></div>
-                                    <button type="submit" class="py-2 px-4 bg-indigo-500 text-black rounded-md hover:bg-indigo-600 font-bold">
+                                    <button type="submit" class="btn btn-primary">
                                         Change Email
                                     </button>
                                 </form>
@@ -133,10 +133,10 @@ if (Astro.request.method === "POST") {
                                     <input type="hidden" name="type" id="type" value="name"/>
                                     <input
                                     id="name" name="name" placeholder="Name" type="text" 
-                                    class="px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    class="input input-bordered w-max max-w-xs"
                                     required
                                     />
-                                    <button type="submit" class="py-2 px-4 bg-indigo-500 text-black rounded-md hover:bg-indigo-600 font-bold">
+                                    <button type="submit" class="btn btn-primary">
                                         Change Name
                                     </button>
                                 </form>
@@ -161,15 +161,15 @@ if (Astro.request.method === "POST") {
                                     <input type="hidden" name="type" id="type" value="password"/>
                                     <div class="pb-1"><input
                                     id="old-password" name="old-password" placeholder="Old Password" type="password" 
-                                    class="px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    class="input input-bordered w-max max-w-xs"
                                     required
                                     /></div>
                                     <input
                                     id="password" name="password" placeholder="New Password" type="password" 
-                                    class="px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                    class="input input-bordered w-max max-w-xs"
                                     required
                                     />
-                                    <button type="submit" class="py-2 px-4 bg-indigo-500 text-black rounded-md hover:bg-indigo-600 font-bold">
+                                    <button type="submit" class="btn btn-primary">
                                         Change Password
                                     </button>
                                 </form>
@@ -185,14 +185,14 @@ if (Astro.request.method === "POST") {
                             <span class="label-text">Delete</span>
                         </div>
 
-                        <button class="btn btn-error w-full py-2 px-4 text-black rounded-md" onclick="delete_modal.showModal()">Delete Account</button>
+                        <button class="btn btn-error w-full" onclick="delete_modal.showModal()">Delete Account</button>
 
                         <dialog id="delete_modal" class="modal">
                             <div class="modal-box">
                                 <h3 class="text-lg font-bold">Delete Account</h3>
                                 <form method="POST" class="pt-2">
                                     <input type="hidden" name="type" id="type" value="delete"/>
-                                    <button class="btn btn-error w-full py-2 px-4 text-black rounded-md" type="submit">Delete Account</button>
+                                    <button class="btn btn-error w-full" type="submit">Delete Account</button>
                                 </form>
                             </div>
                             <form method="dialog" class="modal-backdrop">
@@ -206,4 +206,4 @@ if (Astro.request.method === "POST") {
             </div>
         </div>
     </div>
-</Layout>
+</AuthLayout>

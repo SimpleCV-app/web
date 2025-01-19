@@ -1,5 +1,5 @@
 ---
-import Layout from '../../../layouts/Layout.astro';
+import AuthLayout from '../../../layouts/AuthLayout.astro';
 
 const { user, account } = Astro.locals;
 if (!user || user.emailVerification) {
@@ -12,7 +12,7 @@ await account.createVerification(
 
 ---
 
-<Layout>
+<AuthLayout>
     <div class="flex items-center justify-center">
         <div>
             <h1 class="text-4xl font-bold">Please check your email</h1>
@@ -25,4 +25,4 @@ await account.createVerification(
             </div>
         </div>
     </div>
-</Layout>
+</AuthLayout>
