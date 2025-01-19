@@ -4,7 +4,7 @@ import { createAdminClient } from '../../server/appwrite';
 
 const { user } = Astro.locals;
 if (!user || !user.labels.includes('admin')) {
-    return Astro.redirect("/");;
+    return Astro.redirect("/");
 }
 
 const { users, databases } = createAdminClient();
@@ -12,28 +12,118 @@ const { users, databases } = createAdminClient();
 const total_users = (await users.list()).total
 const total_views = "N/A"
 const total_pages = (await databases.listDocuments(import.meta.env.CV_DB0_ID, 'pages')).total
+
+const meta = await databases.getDocument(import.meta.env.CV_DB0_ID, "meta", "ROOT")
+
+if (Astro.request.method === "POST") {
+    var data = await Astro.request.formData()
+
+    switch (data.get("type")) {
+        case "read-only":
+            await databases.updateDocument(
+                import.meta.env.CV_DB0_ID,
+                "meta",
+                "ROOT",
+                {"read_only_mode": !meta.read_only_mode, "alert_message": (!meta.read_only_mode ? "CV Buddy is currently in read-only mode. This means you can't change any of your data, but you can read it." : null)}
+            )
+            break;
+        case "maintenance_mode":
+            await databases.updateDocument(
+                import.meta.env.CV_DB0_ID,
+                "meta",
+                "ROOT",
+                {"maintenance_mode": !meta.maintenance_mode}
+            )
+            break;
+        case "alert_message":
+            await databases.updateDocument(
+                import.meta.env.CV_DB0_ID,
+                "meta",
+                "ROOT",
+                {"alert_message": (data.get("alert_message") == "" ? null : data.get("alert_message"))}
+            )
+            break;
+    }
+    return Astro.redirect("/admin/dashboard")
+}
 ---
 
 <Layout>
-    <div class="flex items-center justify-center ">
-        <div class="overflow-x-auto w-max rounded-lg shadow-md [&_*]:bg-base-300">
-            <div class="stats shadow bg-base-300">
-                <div class="stat">
-                  <div class="stat-title">Users</div>
-                  <div class="stat-value">{total_users}</div>
-                  <div class="stat-desc">All Time</div>
+    <div class="flex items-center justify-center">
+        <div class="grid grid-cols-2 flex-col rounded-lg shadow-md bg-base-300 border-r-base divide-x divide-base-100">
+            <div class="">
+                <div class="stats stats-vertical shadow [&_*]:bg-base-300">
+                    <div class="stat">
+                        <div class="stat-title">Users</div>
+                        <div class="stat-value">{total_users}</div>
+                        <div class="stat-desc">All Time</div>
+                    </div>
+                
+                    <div class="stat">
+                        <div class="stat-title">Views</div>
+                        <div class="stat-value">{total_views}</div>
+                        <div class="stat-desc">Across All Pages</div>
+                    </div>
+                
+                    <div class="stat">
+                        <div class="stat-title">Pages</div>
+                        <div class="stat-value">{total_pages}</div>
+                        <div class="stat-desc">All Time</div>
+                    </div>
                 </div>
-              
-                <div class="stat">
-                  <div class="stat-title">Views</div>
-                  <div class="stat-value">{total_views}</div>
-                  <div class="stat-desc">Across All Pages</div>
-                </div>
-              
-                <div class="stat">
-                  <div class="stat-title">Pages</div>
-                  <div class="stat-value">{total_pages}</div>
-                  <div class="stat-desc">All Time</div>
+            </div>
+            <div class="px-4 py-2.5">
+                <div>
+                    <!-- Read-Only Mode -->
+                    <div>
+                        <div class="label">
+                            <span class="label-text">Read-Only Mode</span>
+                        </div>
+
+                        <form method="POST">
+                            <input type="hidden" name="type" id="type" value="read-only"/>
+                            <button class="btn btn-primary w-full" type="submit">{meta.read_only_mode ? "Deactivate" : "Activate"}</button>
+                        </form>
+                    </div>
+                    <!-- Maintenance Mode -->
+                    <div>
+                        <div class="label">
+                            <span class="label-text">Maintenance Mode</span>
+                        </div>
+
+                        <form method="POST">
+                            <input type="hidden" name="type" id="type" value="maintenance_mode"/>
+                            <button class="btn btn-primary w-full" type="submit">{meta.maintenance_mode ? "Deactivate" : "Activate"}</button>
+                        </form>
+                    </div>
+                    <!-- Alert Banner -->
+                    <div>
+                        <div class="label">
+                            <span class="label-text">Alert Banner</span>
+                        </div>
+
+                        <button class="btn btn-primary w-full" onclick="alert_banner_modal.showModal()">Edit</button>
+
+                        <dialog id="alert_banner_modal" class="modal">
+                            <div class="modal-box">
+                                <h3 class="text-lg font-bold">Edit Alert Banner</h3>
+                                <form method="POST" class="pt-2">
+                                    <input type="hidden" name="type" id="type" value="alert_message"/>
+                                    <div class="pb-2">
+                                        <input
+                                        id="alert_message" name="alert_message" placeholder="Alert Banner" type="text" 
+                                        class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                        value={meta.alert_message}
+                                        />
+                                    </div>
+                                    <button class="btn btn-error w-full px-4 text-black rounded-md" type="submit">Save</button>
+                                </form>
+                            </div>
+                            <form method="dialog" class="modal-backdrop">
+                                <button>close</button>
+                            </form>
+                        </dialog>
+                    </div>
                 </div>
             </div>
         </div>
