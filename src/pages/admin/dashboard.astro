@@ -1,5 +1,5 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import AdminLayout from '../../layouts/AdminLayout.astro';
 import { createAdminClient } from '../../server/appwrite';
 
 const { user } = Astro.locals;
@@ -48,28 +48,26 @@ if (Astro.request.method === "POST") {
 }
 ---
 
-<Layout>
+<AdminLayout>
     <div class="flex items-center justify-center">
         <div class="grid grid-cols-2 flex-col rounded-lg shadow-md bg-base-300 border-r-base divide-x divide-base-100">
-            <div class="">
-                <div class="stats stats-vertical shadow [&_*]:bg-base-300">
-                    <div class="stat">
-                        <div class="stat-title">Users</div>
-                        <div class="stat-value">{total_users}</div>
-                        <div class="stat-desc">All Time</div>
-                    </div>
-                
-                    <div class="stat">
-                        <div class="stat-title">Views</div>
-                        <div class="stat-value">{total_views}</div>
-                        <div class="stat-desc">Across All Pages</div>
-                    </div>
-                
-                    <div class="stat">
-                        <div class="stat-title">Pages</div>
-                        <div class="stat-value">{total_pages}</div>
-                        <div class="stat-desc">All Time</div>
-                    </div>
+            <div class="stats stats-vertical shadow [&_*]:bg-base-300">
+                <div class="stat">
+                    <div class="stat-title">Users</div>
+                    <div class="stat-value">{total_users}</div>
+                    <div class="stat-desc">All Time</div>
+                </div>
+            
+                <div class="stat">
+                    <div class="stat-title">Views</div>
+                    <div class="stat-value">{total_views}</div>
+                    <div class="stat-desc">Across All Pages</div>
+                </div>
+            
+                <div class="stat">
+                    <div class="stat-title">Pages</div>
+                    <div class="stat-value">{total_pages}</div>
+                    <div class="stat-desc">All Time</div>
                 </div>
             </div>
             <div class="px-4 py-2.5">
@@ -112,7 +110,7 @@ if (Astro.request.method === "POST") {
                                     <div class="pb-2">
                                         <input
                                         id="alert_message" name="alert_message" placeholder="Alert Banner" type="text" 
-                                        class="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                        class="input input-bordered w-max max-w-xs"
                                         value={meta.alert_message}
                                         />
                                     </div>
@@ -174,4 +172,4 @@ if (Astro.request.method === "POST") {
             </table>
         </div>
     </div>
-</Layout>
+</AdminLayout>
