@@ -37,56 +37,6 @@ if (Astro.request.method === "POST") {
         case 'verification':
             users.updateEmailVerification(user_id!.toString(), !managed_user.emailVerification);
             break;
-        case 'initialisation':
-            databases.createDocument(
-                import.meta.env.CV_DB0_ID,
-                "user",
-                user_id!.toString(),
-                {
-                    "enabled": true
-                },
-                [
-                    Permission.write(Role.user(user_id!.toString())),
-                    Permission.read(Role.user(user_id!.toString()))
-                ]
-            )
-            break;
-        case 'initialisation_manage':
-            if (data.get('delete')) {
-                databases.deleteDocument(
-                    import.meta.env.CV_DB0_ID,
-                    "user",
-                    user_id!.toString()
-                )
-            }
-
-            if (data.get("enabled") && !db_record!.enabled) {
-                databases.updateDocument(
-                    import.meta.env.CV_DB0_ID,
-                    "user",
-                    user_id!.toString(),
-                    {
-                        "enabled": true
-                    },
-                    [
-                        Permission.write(Role.user(user_id!.toString())),
-                        Permission.read(Role.user(user_id!.toString()))
-                    ]
-                )
-            } else if (!data.get("enabled") && db_record!.enabled) {
-                databases.updateDocument(
-                    import.meta.env.CV_DB0_ID,
-                    "user",
-                    user_id!.toString(),
-                    {
-                        "enabled": false
-                    },
-                    [
-                        Permission.read(Role.user(user_id!.toString()))
-                    ]
-                )
-            }
-            break;
         case 'deactivate':
             users.updateStatus(user_id!.toString(), !managed_user.status);
             break;
@@ -265,65 +215,8 @@ if (Astro.request.method === "POST") {
                             </form>
                         </dialog>
                     </div>
-                    <!-- Initialise -->
-                    {
-                        db_response.total == 1
-                        ?
-                        (
-                        <div>
-                                <div class="label">
-                                    <span class="label-text">Database</span>
-                                </div>
-
-                                <button class="btn btn-primary w-full" onclick="initialisation_manage_modal.showModal()">Manage Record</button>
-                                <dialog id="initialisation_manage_modal" class="modal">
-                                    <div class="modal-box">
-                                        <h3 class="text-lg font-bold">Manage Record</h3>
-                                        <form method="POST" class="pt-2">
-                                            <input type="hidden" name="type" id="type" value="initialisation_manage"/>
-                                            <label class="label cursor-pointer">
-                                                <span class="label-text">Enabled</span>
-                                                <input type="checkbox" class="checkbox" checked={db_record?.enabled} name="enabled" value="true"/>
-                                            </label>
-                                            <label class="label cursor-pointer">
-                                                <span class="label-text">Delete</span>
-                                                <input type="checkbox" class="checkbox" name="delete" value="true"/>
-                                            </label>
-                                            <button class="btn btn-primary w-full" type="submit">Save</button>
-                                        </form>
-                                    </div>
-                                    <form method="dialog" class="modal-backdrop">
-                                        <button>close</button>
-                                    </form>
-                                </dialog>
-                        </div>
-                        )
-                        :
-                        (
-                        <div>
-                            <div class="label">
-                                <span class="label-text">Database</span>
-                            </div>
-
-                            <button class="btn btn-primary" onclick="initialisation_modal.showModal()">Initialise Account For Database</button>
-
-                            <dialog id="initialisation_modal" class="modal">
-                                <div class="modal-box">
-                                    <h3 class="text-lg font-bold">Initialise Account For Database</h3>
-                                    <form method="POST" class="pt-2">
-                                        <input type="hidden" name="type" id="type" value="initialisation"/>
-                                        <button class="btn btn-primary w-full" type="submit">Initialise Account For Database</button>
-                                    </form>
-                                </div>
-                                <form method="dialog" class="modal-backdrop">
-                                    <button>close</button>
-                                </form>
-                            </dialog>
-                        </div>
-                        )
-                    }
                     <!-- Deactivate -->
-                    <div class="pr-3">
+                    <div>
                         <div class="label">
                             <span class="label-text">Activation</span>
                         </div>
@@ -344,7 +237,7 @@ if (Astro.request.method === "POST") {
                         </dialog>
                     </div>
                     <!-- Delete -->
-                    <div>
+                    <div class="pr-3">
                         <div class="label">
                             <span class="label-text">Delete Account</span>
                         </div>
