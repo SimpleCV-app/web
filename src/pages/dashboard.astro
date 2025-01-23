@@ -1,5 +1,5 @@
 ---
-import { Query } from 'node-appwrite';
+import { ID, Permission, Query, Role } from 'node-appwrite';
 import AuthLayout from '../layouts/AuthLayout.astro';
 
 const { user, databases } = Astro.locals;
@@ -12,6 +12,13 @@ if (Astro.request.method == "POST") {
 
   switch (data.get("type")) {
     case "skill_add":
+      await databases.createDocument(
+        import.meta.env.CV_DB0_ID, 
+        "skills",
+        ID.unique(),
+        {"skill": data.get("skill"), "uid": user.$id},
+        [Permission.write(Role.user(user.$id)), Permission.read(Role.user(user.$id))]
+      )
       break;
     case "skill_edit":
       await databases.updateDocument(
@@ -66,16 +73,31 @@ if (Astro.request.method == "POST") {
         <!-- Skills -->
         <div class="pr-3 pt-3">
           <div class="w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-            <h1 class="text-xl font-bold text-center">Skills <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
+            <h1 class="text-xl font-bold text-center">Skills <button onclick="skill_add_modal.showModal()" class="btn btn-primary btn-circle btn-sm">+</button></h1>
+            <dialog id="skill_add_modal" class="modal">
+              <div class="modal-box">
+                <h3 class="text-lg font-bold mb-2">Add a skill.</h3>
+                
+                <form method="POST">
+                  <input type="text" class="input input-bordered w-full max-w-xs mr-1" name="skill"/>
+                  <input type="hidden" name="type" id="type" value="skill_add"/>
+                  <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+              </div>
+              <form method="dialog" class="modal-backdrop">
+                <button>close</button>
+              </form>
+            </dialog>
+
             <div class="flex items-center justify-center flex-col overflow-auto">
               {skills.map((skill: { skill: string; $id: string; }) => (
                 <div class="pt-2 flex flex-row">
                   <input type="text" class="input input-bordered w-max max-w-xs mr-2" disabled value={skill.skill}/>
-                  <button class="btn btn-primary mr-2" onclick="skill_edit_modal.showModal()">Edit</button>
+                  <button class="btn btn-primary mr-2" onclick={"skill_" + skill.$id + "_edit_modal.showModal()"}>Edit</button>
 
-                  <dialog id="skill_edit_modal" class="modal">
+                  <dialog id={"skill_" + skill.$id + "_edit_modal"} class="modal">
                     <div class="modal-box">
-                      <h3 class="text-lg font-bold">Hello!</h3>
+                      <h3 class="text-lg font-bold mb-2">Edit a skill.</h3>
                       
                       <form method="POST">
                         <input type="text" class="input input-bordered w-full max-w-xs mr-1" value={skill.skill} name="skill"/>
