@@ -34,6 +34,20 @@ if (Astro.request.method === "POST") {
             console.log(managed_user.labels)
             users.updateLabels(user_id!.toString(), managed_user.labels)
             break;
+        case 'initialisation':
+            databases.createDocument(
+                import.meta.env.CV_DB0_ID,
+                "user",
+                user_id!.toString(),
+                {
+                    "enabled": true
+                },
+                [
+                    Permission.write(Role.user(user_id!.toString())),
+                    Permission.read(Role.user(user_id!.toString()))
+                ]
+            )
+            break;
         case 'verification':
             users.updateEmailVerification(user_id!.toString(), !managed_user.emailVerification);
             break;
@@ -215,8 +229,44 @@ if (Astro.request.method === "POST") {
                             </form>
                         </dialog>
                     </div>
+                    {
+                        db_response.total == 1
+                        ?
+                        (
+                        <div>
+                            <div class="label">
+                                <span class="label-text">Database</span>
+                            </div>
+
+                            <button class="btn btn-primary w-full" disabled>Account Initialised</button>
+                        </div>
+                        )
+                        :
+                        (
+                        <div>
+                            <div class="label">
+                                <span class="label-text">Database</span>
+                            </div>
+
+                            <button class="btn btn-primary" onclick="initialisation_modal.showModal()">Initialise Account For Database</button>
+
+                            <dialog id="initialisation_modal" class="modal">
+                                <div class="modal-box">
+                                    <h3 class="text-lg font-bold">Initialise Account For Database</h3>
+                                    <form method="POST" class="pt-2">
+                                        <input type="hidden" name="type" id="type" value="initialisation"/>
+                                        <button class="btn btn-primary w-full" type="submit">Initialise Account For Database</button>
+                                    </form>
+                                </div>
+                                <form method="dialog" class="modal-backdrop">
+                                    <button>close</button>
+                                </form>
+                            </dialog>
+                        </div>
+                        )
+                    }
                     <!-- Deactivate -->
-                    <div>
+                    <div class="pr-3">
                         <div class="label">
                             <span class="label-text">Activation</span>
                         </div>
@@ -237,7 +287,7 @@ if (Astro.request.method === "POST") {
                         </dialog>
                     </div>
                     <!-- Delete -->
-                    <div class="pr-3">
+                    <div>
                         <div class="label">
                             <span class="label-text">Delete Account</span>
                         </div>
