@@ -5,6 +5,7 @@ import AuthLayout from '../layouts/AuthLayout.astro';
 const { user, databases } = Astro.locals;
 
 const skills = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "skills", [Query.equal("uid", [user.$id])])).documents
+const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "contact-details", [Query.equal("uid", [user.$id])])).documents
 
 if (Astro.request.method == "POST") {
   const data = await Astro.request.formData()
@@ -45,92 +46,124 @@ if (Astro.request.method == "POST") {
           <h1 class="text-xl font-bold text-center">Pages <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
         </div>
       </div>
-      <div class="grid grid-cols-2 flex-col pt-3">
-        <!-- Education -->
-        <div class="pr-3">
-          <div class="w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-            <h1 class="text-xl font-bold text-center">Education <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
+      <div>
+        <div class="grid grid-cols-2 flex-col pt-3">
+          <!-- Education -->
+          <div class="pr-3">
+            <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
+              <h1 class="text-xl font-bold text-center">Education <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
+            </div>
           </div>
-        </div>
-        <!-- Work Experience -->
-        <div class="pl-3">
-          <div class="w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-            <h1 class="text-xl font-bold text-center">Work Experience <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
-          </div>
-        </div>
-        <!-- Contact Details -->
-        <div class="pr-3 pt-3">
-          <div class="w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-            <h1 class="text-xl font-bold text-center">Contact Details <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
-          </div>
-        </div>
-        <!-- References -->
-        <div class="pt-3 pl-3">
-          <div class="w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-            <h1 class="text-xl font-bold text-center">References <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
-          </div>
-        </div>
-        <!-- Skills -->
-        <div class="pr-3 pt-3">
-          <div class="w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-            <h1 class="text-xl font-bold text-center">Skills <button onclick="skill_add_modal.showModal()" class="btn btn-primary btn-circle btn-sm">+</button></h1>
-            <dialog id="skill_add_modal" class="modal">
-              <div class="modal-box">
-                <h3 class="text-lg font-bold mb-2">Add a skill.</h3>
-                
-                <form method="POST">
-                  <input type="text" class="input input-bordered w-full max-w-xs mr-1" name="skill"/>
-                  <input type="hidden" name="type" id="type" value="skill_add"/>
-                  <button type="submit" class="btn btn-primary">Add</button>
-                </form>
-              </div>
-              <form method="dialog" class="modal-backdrop">
-                <button>close</button>
-              </form>
-            </dialog>
-
-            <div class="flex items-center justify-center flex-col overflow-auto">
-              {skills.map((skill: { skill: string; $id: string; }) => (
-                <div class="pt-2 flex flex-row">
-                  <input type="text" class="input input-bordered w-max max-w-xs mr-2" disabled value={skill.skill}/>
-                  <button class="btn btn-primary mr-2" onclick={"skill_" + skill.$id + "_edit_modal.showModal()"}>Edit</button>
-
-                  <dialog id={"skill_" + skill.$id + "_edit_modal"} class="modal">
-                    <div class="modal-box">
-                      <h3 class="text-lg font-bold mb-2">Edit a skill.</h3>
-                      
-                      <form method="POST">
-                        <input type="text" class="input input-bordered w-full max-w-xs mr-1" value={skill.skill} name="skill"/>
-                        <input type="hidden" name="type" id="type" value="skill_edit"/>
-                        <input type="hidden" name="skill_id" value={skill.$id}/>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                      </form>
-                    </div>
-                    <form method="dialog" class="modal-backdrop">
-                      <button>close</button>
-                    </form>
-                  </dialog>
-
-                  <form method="POST">
-                    <input type="hidden" name="type" id="type" value="skill_delete"/>
-                    <input type="hidden" name="skill_id" value={skill.$id}/>
-                    <button type="submit" class="btn btn-error">-</button>
-                  </form>
-                </div>
-              ))}
+          <!-- Work Experience -->
+          <div class="pl-3">
+            <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
+              <h1 class="text-xl font-bold text-center">Work Experience <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
             </div>
           </div>
         </div>
-        <!-- Images -->
-        <div class="pt-3 pl-3">
-          <div class="w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-            <h1 class="text-xl font-bold text-center">Images <button class="btn btn-primary btn-circle btn-sm" disabled>+</button></h1>
-            <div class="flex items-center justify-center">
-              <p class="italic">Images are not currently supported</p>
+        <div class="grid grid-cols-2 flex-col">
+          <!-- Contact Details -->
+          <div class="pr-3 pt-3">
+            <div class="w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
+              <h1 class="text-xl font-bold text-center">Contact Details <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
+
+              <div class="h-full w-full max-w-4xl bg-base-200 rounded-lg shadow-md p-1 mt-2">
+                <div class="overflow-x-auto divide-x divide-y divide-base-100">
+                  <table class="table">
+                    <!-- head -->
+                    <thead>
+                      <tr>
+                        <th>Type</th>
+                        <th>Value</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {contact_details.map((contact: { type: unknown; value: unknown; $id: string; }) => (
+                        <tr>
+                          <th>{contact.type}</th>
+                          <td>{contact.value}</td>
+                          <td class="flex justify-end">
+                            <button onclick={"contact_detail_edit_" + contact.$id + ".showModal()"} class="btn btn-primary mr-2">Edit</button>
+                            <button onclick={"contact_detail_delete_" + contact.$id + ".showModal()"} class="btn btn-error">-</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- References -->
+          <div class="pt-3 pl-3">
+            <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
+              <h1 class="text-xl font-bold text-center">References <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 flex-col">
+          <!-- Skills -->
+          <div class="pr-3 pt-3">
+            <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
+              <h1 class="text-xl font-bold text-center">Skills <button onclick="skill_add_modal.showModal()" class="btn btn-primary btn-circle btn-sm">+</button></h1>
+              <dialog id="skill_add_modal" class="modal">
+                <div class="modal-box">
+                  <h3 class="text-lg font-bold mb-2">Add a skill.</h3>
+                  
+                  <form method="POST">
+                    <input type="text" class="input input-bordered w-full max-w-xs mr-1" name="skill"/>
+                    <input type="hidden" name="type" id="type" value="skill_add"/>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                  </form>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                  <button>close</button>
+                </form>
+              </dialog>
+
+              <div class="flex items-center justify-center flex-col overflow-auto">
+                {skills.map((skill: { skill: string; $id: string; }) => (
+                  <div class="pt-2 flex flex-row">
+                    <input type="text" class="input input-bordered w-max max-w-xs mr-2" disabled value={skill.skill}/>
+                    <button class="btn btn-primary mr-2" onclick={"skill_" + skill.$id + "_edit_modal.showModal()"}>Edit</button>
+
+                    <dialog id={"skill_" + skill.$id + "_edit_modal"} class="modal">
+                      <div class="modal-box">
+                        <h3 class="text-lg font-bold mb-2">Edit a skill.</h3>
+                        
+                        <form method="POST">
+                          <input type="text" class="input input-bordered w-full max-w-xs mr-1" value={skill.skill} name="skill"/>
+                          <input type="hidden" name="type" id="type" value="skill_edit"/>
+                          <input type="hidden" name="skill_id" value={skill.$id}/>
+                          <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                      </div>
+                      <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                      </form>
+                    </dialog>
+
+                    <form method="POST">
+                      <input type="hidden" name="type" id="type" value="skill_delete"/>
+                      <input type="hidden" name="skill_id" value={skill.$id}/>
+                      <button type="submit" class="btn btn-error">-</button>
+                    </form>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <!-- Images -->
+          <div class="pt-3 pl-3">
+            <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
+              <h1 class="text-xl font-bold text-center">Images <button class="btn btn-primary btn-circle btn-sm" disabled>+</button></h1>
+              <div class="flex items-center justify-center">
+                <p class="italic">Images are not currently supported</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 </AuthLayout>
