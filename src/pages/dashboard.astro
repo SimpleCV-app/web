@@ -109,13 +109,13 @@ if (Astro.request.method == "POST") {
             <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
               <h1 class="text-xl font-bold text-center">Skills <button onclick="skill_add_modal.showModal()" class="btn btn-primary btn-circle btn-sm">+</button></h1>
               <dialog id="skill_add_modal" class="modal">
-                <div class="modal-box">
+                <div class="modal-box w-max">
                   <h3 class="text-lg font-bold mb-2">Add a skill.</h3>
                   
                   <form method="POST">
-                    <input type="text" class="input input-bordered w-full max-w-xs mr-1" name="skill"/>
+                    <input type="text" class="input input-bordered w-full" name="skill"/>
                     <input type="hidden" name="type" id="type" value="skill_add"/>
-                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="submit" class="btn btn-primary w-full mt-1">Add</button>
                   </form>
                 </div>
                 <form method="dialog" class="modal-backdrop">
