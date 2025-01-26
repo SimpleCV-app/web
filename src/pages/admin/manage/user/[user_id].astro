@@ -7,6 +7,7 @@ const { users, databases } = createAdminClient();
 const { user_id } = Astro.params!;
 
 const managed_user = (await users.list([Query.equal("$id", [user_id!.toString()])])).users[0]
+const sessions = (await users.listSessions(user_id!.toString()))
 const db_response = await databases.listDocuments(import.meta.env.CV_DB0_ID, "user", [Query.equal("$id", [user_id!.toString()])])
 var db_record = null
 if (db_response.total == 1) {
@@ -31,7 +32,6 @@ if (Astro.request.method === "POST") {
             break;
         case 'label_add':
             managed_user.labels.push(data.get("label_name")!.toString())
-            console.log(managed_user.labels)
             users.updateLabels(user_id!.toString(), managed_user.labels)
             break;
         case 'initialisation':
@@ -62,14 +62,17 @@ if (Astro.request.method === "POST") {
             )
             users.delete(user_id!.toString());
             return Astro.redirect("/admin/dashboard");
+        case 'session_delete':
+            users.deleteSession(user_id!.toString(), data.get("session_id")!.toString())
+            break;
     }
     return Astro.redirect(Astro.url.pathname)
 }
 ---
 
 <AdminLayout>
-    <div class="flex items-center justify-center">
-        <div class="w-max max-w-4xl bg-base-300 rounded-lg shadow-md p-6">
+    <div class="flex items-center justify-center flex-col">
+        <div class="w-max bg-base-300 rounded-lg shadow-md p-6">
             <div tabindex="0" role="button" class="avatar">
                 <div class="w-24 rounded-full">
                     <img
@@ -314,5 +317,45 @@ if (Astro.request.method === "POST") {
                 </div>
             </div>
         </div>
-    </Artboard>
+        <div class="w-max bg-base-300 rounded-lg shadow-md mt-4 divide-y divide-base-100">
+            <div class="p-3">
+                <h2 class="text-2xl font-semibold text-white text-center">Sessions</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="table">
+                  <!-- head -->
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Expiry</th>
+                      <th>Provider</th>
+                      <th>IP</th>
+                      <th>Device</th>
+                      <th>Location</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sessions.sessions.map((session) => (
+                        <tr>
+                            <th>{session.$id}</th>
+                            <td>{session.expire}</td>
+                            <td>{session.provider}</td>
+                            <td>{session.ip}</td>
+                            <td>{session.osCode}/{session.osName}</td>
+                            <td>{session.countryName}</td>
+                            <td>
+                                <form method="POST">
+                                    <input type="hidden" name="type" id="type" value="session_delete"/>
+                                    <input type="hidden" name="session_id" id="session_id" value={session.$id}/>
+                                    <button class="btn btn-error w-full " type="submit">-</button>
+                                </form>
+                            </td>
+                        </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+        </div>
+    </div>
 </AdminLayout>
