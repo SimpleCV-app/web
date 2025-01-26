@@ -12,6 +12,26 @@ if (Astro.request.method == "POST") {
   console.log(data)
 
   switch (data.get("type")) {
+    case "contact_add":
+      await databases.createDocument(
+        import.meta.env.CV_DB0_ID, 
+        "contact-details",
+        ID.unique(),
+        {"type": data.get("contact_type"), "value": data.get("value"), "uid": user.$id},
+        [Permission.write(Role.user(user.$id)), Permission.read(Role.user(user.$id))]
+      )
+      break;
+    case "contact_edit":
+      await databases.updateDocument(
+        import.meta.env.CV_DB0_ID, 
+        "contact-details", 
+        data.get("contact_id"),
+        {"value": data.get("value")}
+      )
+      break;
+    case "contact_delete":
+      await databases.deleteDocument(import.meta.env.CV_DB0_ID, "contact-details", data.get("contact_id"))
+      break;
     case "skill_add":
       await databases.createDocument(
         import.meta.env.CV_DB0_ID, 
@@ -65,12 +85,51 @@ if (Astro.request.method == "POST") {
           <!-- Contact Details -->
           <div class="pr-3 pt-3">
             <div class="w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-              <h1 class="text-xl font-bold text-center">Contact Details <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
+              <h1 class="text-xl font-bold text-center">Contact Details <button onclick="contact_detail_add.showModal()" class="btn btn-primary btn-circle btn-sm">+</button></h1>
+
+              <dialog id="contact_detail_add" class="modal">
+                <div class="modal-box w-max">
+                  <script>
+                    document.getElementById("contact_type") && document.getElementById("contact_type")?.addEventListener("change", updateValueBox)
+                    function updateValueBox() {
+                      var selectMenu = (document.getElementById("contact_type")! as HTMLSelectElement);
+                      var valueBox = (document.getElementById("contact_detail_add_value")! as HTMLInputElement);
+                      switch (selectMenu.value) {
+                        case 'email':
+                          valueBox.disabled = false
+                          valueBox.placeholder = "example@example.com"
+                          valueBox.type = "email"
+                          break;
+                        case 'number':
+                          valueBox.disabled = false
+                          valueBox.placeholder = "07123456789"
+                          valueBox.pattern = "0[789][0-9]{9}"
+                          valueBox.type = "text"
+                          break;
+                      }
+                    }
+                  </script>
+                  <h3 class="text-lg font-bold mb-1">Add a contact detail.</h3>
+                  
+                  <form method="POST" id="contact_detail_add_form">
+                    <select class="select select-bordered w-full" name="contact_type" id="contact_type" form="contact_detail_add_form">
+                      <option disabled selected>Select a type</option>
+                      <option value="email">Email</option>
+                      <option value="number">Phone Number</option>
+                    </select>
+                    <input type="text" class="input input-bordered w-full mt-2" name="value" id="contact_detail_add_value" disabled/>
+                    <input type="hidden" name="type" id="type" value="contact_add"/>
+                    <button type="submit" class="btn btn-primary w-full mt-2">Add</button>
+                  </form>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                  <button>close</button>
+                </form>
+              </dialog>
 
               <div class="h-full w-full max-w-4xl bg-base-200 rounded-lg shadow-md p-1 mt-2">
                 <div class="overflow-x-auto">
                   <table class="table">
-                    <!-- head -->
                     <thead>
                       <tr>
                         <th>Type</th>
@@ -85,13 +144,34 @@ if (Astro.request.method == "POST") {
                           <td>{contact.value}</td>
                           <td class="flex justify-end">
                             <button onclick={"contact_detail_edit_" + contact.$id + ".showModal()"} class="btn btn-primary mr-2">Edit</button>
-                            <button onclick={"contact_detail_delete_" + contact.$id + ".showModal()"} class="btn btn-error">-</button>
+
+                            <form method="POST">
+                              <input type="hidden" name="contact_id" value={contact.$id}/>
+                              <input type="hidden" name="type" id="type" value="contact_delete"/>
+                              <button type="submit" class="btn btn-error">-</button>
+                            </form>
                           </td>
                         </tr>
-                        <div></div>
                       ))}
                     </tbody>
                   </table>
+                  {contact_details.map((contact: { type: unknown; value: string; $id: string; }) => (
+                    <dialog id={"contact_detail_edit_" + contact.$id} class="modal">
+                      <div class="modal-box w-max">
+                        <h3 class="text-lg font-bold mb-1">Edit a contact detail.</h3>
+                        
+                        <form method="POST">
+                          <input type={contact.type == "email" ? "email" : "text"} class="input input-bordered w-full" value={contact.value} name="value" pattern={contact.type == "number" ? "0[789][0-9]{9}" : null}/>
+                          <input type="hidden" name="type" id="type" value="contact_edit"/>
+                          <input type="hidden" name="contact_id" value={contact.$id}/>
+                          <button type="submit" class="btn btn-primary w-full mt-2">Save</button>
+                        </form>
+                      </div>
+                      <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                      </form>
+                    </dialog>
+                  ))}
                 </div>
               </div>
             </div>
@@ -110,12 +190,12 @@ if (Astro.request.method == "POST") {
               <h1 class="text-xl font-bold text-center">Skills <button onclick="skill_add_modal.showModal()" class="btn btn-primary btn-circle btn-sm">+</button></h1>
               <dialog id="skill_add_modal" class="modal">
                 <div class="modal-box w-max">
-                  <h3 class="text-lg font-bold mb-2">Add a skill.</h3>
+                  <h3 class="text-lg font-bold mb-1">Add a skill.</h3>
                   
                   <form method="POST">
                     <input type="text" class="input input-bordered w-full" name="skill"/>
                     <input type="hidden" name="type" id="type" value="skill_add"/>
-                    <button type="submit" class="btn btn-primary w-full mt-1">Add</button>
+                    <button type="submit" class="btn btn-primary w-full mt-2">Add</button>
                   </form>
                 </div>
                 <form method="dialog" class="modal-backdrop">
@@ -130,7 +210,7 @@ if (Astro.request.method == "POST") {
                     <button class="btn btn-primary mr-2" onclick={"skill_" + skill.$id + "_edit_modal.showModal()"}>Edit</button>
 
                     <dialog id={"skill_" + skill.$id + "_edit_modal"} class="modal">
-                      <div class="modal-box">
+                      <div class="modal-box w-max">
                         <h3 class="text-lg font-bold mb-2">Edit a skill.</h3>
                         
                         <form method="POST">
