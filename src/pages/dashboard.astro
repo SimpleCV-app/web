@@ -1,16 +1,52 @@
 ---
 import { ID, Permission, Query, Role } from 'node-appwrite';
 import AuthLayout from '../layouts/AuthLayout.astro';
+import { date } from 'astro:schema';
 
 const { user, databases } = Astro.locals;
 
 const skills = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "skills", [Query.equal("uid", [user.$id])])).documents
 const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "contact-details", [Query.equal("uid", [user.$id])])).documents
+const education = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "education", [Query.equal("uid", [user.$id])])).documents
 
 if (Astro.request.method == "POST") {
   const data = await Astro.request.formData()
+  console.log(data)
 
   switch (data.get("type")) {
+    case "education_add":
+      await databases.createDocument(
+        import.meta.env.CV_DB0_ID, 
+        "education",
+        ID.unique(),
+        {
+          "uid": user.$id,
+          "name": data.get("education_name"), 
+          "description": data.get("education_description"), 
+          "start_year": Number(data.get("education_start_year")), 
+          "end_year": (data.get("education_present") == "on" ? null : Number(data.get("education_end_year"))), 
+          "present": data.get("education_present") == "on"
+        },
+        [Permission.write(Role.user(user.$id)), Permission.read(Role.user(user.$id))]
+      )
+      break;
+    case "education_edit":
+      await databases.updateDocument(
+        import.meta.env.CV_DB0_ID, 
+        "education", 
+        data.get("education_id"),
+        {
+          "name": data.get("education_name"), 
+          "description": data.get("education_description"), 
+          "start_year": Number(data.get("education_start_year")), 
+          "end_year": (data.get("education_present") == "on" ? null : Number(data.get("education_end_year"))), 
+          "present": data.get("education_present") == "on"
+        }
+      )
+      break;
+    case "education_delete":
+      await databases.deleteDocument(import.meta.env.CV_DB0_ID, "education", data.get("education_id"))
+      break;
     case "contact_add":
       await databases.createDocument(
         import.meta.env.CV_DB0_ID, 
@@ -71,8 +107,138 @@ if (Astro.request.method == "POST") {
           <!-- Education -->
           <div class="pr-3">
             <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-              <h1 class="text-xl font-bold text-center">Education <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
-              Not Implemented
+              <h1 class="text-xl font-bold text-center">Education <button onclick="education_add.showModal()" class="btn btn-primary btn-circle btn-sm">+</button></h1>
+
+              <dialog id="education_add" class="modal">
+                <div class="modal-box w-max">
+                  <h3 class="text-lg font-bold mb-1">Add education history.</h3>
+                  
+                  <form method="POST">
+                    <label class="form-control w-full max-w-xs">
+                      <div class="label">
+                        <span class="label-text">Name</span>
+                      </div>
+                      <input type="text" name="education_name" class="input input-bordered" />
+                    </label>
+
+                    <label class="form-control w-full max-w-xs">
+                      <div class="label">
+                        <span class="label-text">Description</span>
+                      </div>
+                      <input type="text" name="education_description" class="input input-bordered" />
+                    </label>
+
+                    <label class="form-control w-full max-w-xs">
+                      <div class="label">
+                        <span class="label-text">Start Year</span>
+                      </div>
+                      <input type="number" min="1900" max={new Date().getFullYear()} name="education_start_year" class="input input-bordered" />
+                    </label>
+
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">End Year</span>
+                      </div>
+                      <div class="flex ">
+                        <input type="number" min="1900" max={new Date().getFullYear()} name="education_end_year" id="education_end_year" class="w-full input input-bordered" value={education.end_year} />
+                        <div class="tooltip" data-tip="Present">
+                          <input type="checkbox" class="checkbox h-[3rem] w-[3rem]  ml-1" name="education_present" id="education_present" />
+                        </div>
+                      </div>
+                    </label>
+
+                    <input type="hidden" name="type" id="type" value="education_add"/>
+                    <button type="submit" class="btn btn-primary w-full mt-2">Add</button>
+                  </form>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                  <button>close</button>
+                </form>
+              </dialog>
+              
+              <div class=" w-full bg-base-200 rounded-lg shadow-md p-1 mt-2">
+                <div class="overflow-x-auto">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Start Year</th>
+                        <th>End Year</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {education.map((education: {$id: string; end_year: number; name: string; description: string; start_year: number; present: any; }) => (
+                        <tr>
+                          <th>{education.name}</th>
+                          <td>{education.description}</td>
+                          <td>{education.start_year}</td>
+                          <td>{education.present ? "PRESENT" : education.end_year}</td>
+                          <td class="flex justify-end">
+                            <button onclick={"education_edit_" + education.$id + ".showModal()"} class="btn btn-primary mr-2">Edit</button>
+
+                            <form method="POST">
+                              <input type="hidden" name="education_id" value={education.$id}/>
+                              <input type="hidden" name="type" id="type" value="education_delete"/>
+                              <button type="submit" class="btn btn-error">-</button>
+                            </form>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {education.map((education: { end_year: number; name: string; description: string; start_year: number; present: any; $id: string; }) => (
+                    <dialog id={"education_edit_" + education.$id} class="modal">
+                      <div class="modal-box w-max">
+                        <h3 class="text-lg font-bold mb-1">Edit an education record.</h3>
+                        
+                        <form method="POST">
+                          <label class="form-control w-full max-w-xs">
+                            <div class="label">
+                              <span class="label-text">Name</span>
+                            </div>
+                            <input type="text" name="education_name" class="input input-bordered" value={education.name} />
+                          </label>
+
+                          <label class="form-control w-full max-w-xs">
+                            <div class="label">
+                              <span class="label-text">Description</span>
+                            </div>
+                            <input type="text" name="education_description" class="input input-bordered" value={education.description} />
+                          </label>
+
+                          <label class="form-control w-full max-w-xs">
+                            <div class="label">
+                              <span class="label-text">Start Year</span>
+                            </div>
+                            <input type="number" min="1900" max={new Date().getFullYear()} name="education_start_year" class="input input-bordered" value={education.start_year} />
+                          </label>
+
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">End Year</span>
+                            </div>
+                            <div class="flex ">
+                              <input type="number" min="1900" max={new Date().getFullYear()} name="education_end_year" id="education_end_year" class="w-full input input-bordered" value={education.end_year} />
+                              <div class="tooltip" data-tip="Present">
+                                <input type="checkbox" class="checkbox h-[3rem] w-[3rem]  ml-1" name="education_present" id="education_present" checked={education.present} />
+                              </div>
+                            </div>
+                          </label>
+
+                          <input type="hidden" name="type" id="type" value="education_edit"/>
+                          <input type="hidden" name="education_id" value={education.$id}/>
+                          <button type="submit" class="btn btn-primary w-full mt-2">Save</button>
+                        </form>
+                      </div>
+                      <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                      </form>
+                    </dialog>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
           <!-- Work Experience -->
@@ -129,7 +295,7 @@ if (Astro.request.method == "POST") {
                 </form>
               </dialog>
 
-              <div class="h-full w-full max-w-4xl bg-base-200 rounded-lg shadow-md p-1 mt-2">
+              <div class="h-full w-full bg-base-200 rounded-lg shadow-md p-1 mt-2">
                 <div class="overflow-x-auto">
                   <table class="table">
                     <thead>
