@@ -1,6 +1,7 @@
 ---
 import AuthLayout from '../../../layouts/AuthLayout.astro';
 
+/*
 const { user, account } = Astro.locals;
 if (!user || user.emailVerification) {
   return Astro.redirect("/account");
@@ -9,15 +10,15 @@ if (!user || user.emailVerification) {
 await account.createVerification(
     Astro.url.origin + "/account/verification/confirm"
 );
-
+*/
 ---
 
 <AuthLayout>
-    <div class="flex items-center justify-center">
+    <div class="h-full flex items-center justify-center">
         <div>
             <h1 class="text-4xl font-bold">Please check your email</h1>
             
-            <div class="flex items-center justify-center pt-3">
+            <div class="flex items-center justify-center pt-3 text-lg">
                 <div>
                     <p>We've sent a verification email to your inbox.</p>
                     <p>Please follow the link to confirm your email.</p>

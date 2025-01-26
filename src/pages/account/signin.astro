@@ -11,7 +11,7 @@ if (user) {
 var errors = "";
 if (Astro.request.method === "POST") {
     // Extract the form data
-    const data = await Astro.request.formData();
+    const data = await Astro.request.clone().formData();
     const email = data.get("email")!.toString();
     const password = data.get("password")!.toString();
 
@@ -45,6 +45,7 @@ if (Astro.request.method === "POST") {
                     break;
                 case "user_blocked":
                     errors = "Your account has been deactivated by an Administrator."
+                    return Astro.rewrite("/e/account_blocked")
             }
         } else {
             console.error(error);
