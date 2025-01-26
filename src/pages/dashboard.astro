@@ -9,7 +9,6 @@ const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID
 
 if (Astro.request.method == "POST") {
   const data = await Astro.request.formData()
-  console.log(data)
 
   switch (data.get("type")) {
     case "contact_add":
@@ -64,6 +63,7 @@ if (Astro.request.method == "POST") {
         <!-- Pages -->
         <div class="bg-base-300 rounded-lg shadow-md p-4">
           <h1 class="text-xl font-bold text-center">Pages <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
+          Not Implemented
         </div>
       </div>
       <div>
@@ -72,12 +72,14 @@ if (Astro.request.method == "POST") {
           <div class="pr-3">
             <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
               <h1 class="text-xl font-bold text-center">Education <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
+              Not Implemented
             </div>
           </div>
           <!-- Work Experience -->
           <div class="pl-3">
             <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
               <h1 class="text-xl font-bold text-center">Work Experience <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
+              Not Implemented
             </div>
           </div>
         </div>
@@ -180,6 +182,7 @@ if (Astro.request.method == "POST") {
           <div class="pt-3 pl-3">
             <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
               <h1 class="text-xl font-bold text-center">References <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
+              Not Implemented
             </div>
           </div>
         </div>
