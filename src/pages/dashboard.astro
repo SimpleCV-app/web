@@ -8,6 +8,7 @@ const { user, databases } = Astro.locals;
 const skills = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "skills", [Query.equal("uid", [user.$id])])).documents
 const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "contact-details", [Query.equal("uid", [user.$id])])).documents
 const education = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "education", [Query.equal("uid", [user.$id])])).documents
+const work_experience = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "work-experience", [Query.equal("uid", [user.$id])])).documents
 
 if (Astro.request.method == "POST") {
   const data = await Astro.request.formData()
@@ -46,6 +47,41 @@ if (Astro.request.method == "POST") {
       break;
     case "education_delete":
       await databases.deleteDocument(import.meta.env.CV_DB0_ID, "education", data.get("education_id"))
+      break;
+    case "work_add":
+      await databases.createDocument(
+        import.meta.env.CV_DB0_ID, 
+        "work-experience", 
+        ID.unique(),
+        {
+          "job_title": data.get("work_job_title"), 
+          "job_description": data.get("work_job_description"), 
+          "company_name": data.get("work_company_name"),
+          "start_date": data.get("work_start_date"), 
+          "end_date": (data.get("work_present") == "on" ? null : data.get("work_end_date")), 
+          "present": data.get("work_present") == "on",
+          "uid": user.$id
+        },
+        [Permission.write(Role.user(user.$id)), Permission.read(Role.user(user.$id))]
+      )
+      break;
+    case "work_edit":
+      await databases.updateDocument(
+        import.meta.env.CV_DB0_ID, 
+        "work-experience", 
+        data.get("work_id"),
+        {
+          "job_title": data.get("work_job_title"), 
+          "job_description": data.get("work_job_description"), 
+          "company_name": data.get("work_company_name"),
+          "start_date": data.get("work_start_date"), 
+          "end_date": (data.get("work_present") == "on" ? null : data.get("work_end_date")), 
+          "present": data.get("work_present") == "on"
+        }
+      )
+      break;
+    case "work_delete":
+      await databases.deleteDocument(import.meta.env.CV_DB0_ID, "work-experience", data.get("work_id"))
       break;
     case "contact_add":
       await databases.createDocument(
@@ -244,8 +280,148 @@ if (Astro.request.method == "POST") {
           <!-- Work Experience -->
           <div class="pl-3">
             <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-              <h1 class="text-xl font-bold text-center">Work Experience <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
-              Not Implemented
+              <h1 class="text-xl font-bold text-center">Work Experience <button class="btn btn-primary btn-circle btn-sm" onclick="work_add.showModal()">+</button></h1>
+              
+              <dialog id="work_add" class="modal">
+                <div class="modal-box">
+                  <h3 class="text-lg font-bold mb-1">Add work experience history.</h3>
+                  
+                  <form method="POST">
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">Job title</span>
+                      </div>
+                      <input type="text" name="work_job_title" class="input input-bordered" required/>
+                    </label>
+
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">Job Description</span>
+                      </div>
+                      <textarea name="work_job_description" class="textarea textarea-bordered" rows="10" cols="30" required></textarea>
+                    </label>
+
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">Company Name</span>
+                      </div>
+                      <input type="text" name="work_company_name" class="input input-bordered" required/>
+                    </label>
+
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">Start Date</span>
+                      </div>
+                      <input type="text" minlength="6" maxlength="7" placeholder={new Date().getMonth()+1 + "/" + new Date().getFullYear()} pattern="[0-9]{1,2}[\/][0-9]{4}" name="work_start_date" class="input input-bordered" required/>
+                    </label>
+
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">End Date</span>
+                      </div>
+                      <div class="flex w-full">
+                        <input type="text" minlength="6" maxlength="7" placeholder={new Date().getMonth()+1 + "/" + new Date().getFullYear()} pattern="[0-9]{1,2}[\/][0-9]{4}" name="work_end_date" class="input input-bordered w-full"/>
+                        <div class="tooltip" data-tip="Present">
+                          <input type="checkbox" class="checkbox h-[3rem] w-[3rem]  ml-1" name="work_present"/>
+                        </div>
+                      </div>
+                    </label>
+
+                    <input type="hidden" name="type" id="type" value="work_add"/>
+                    <button type="submit" class="btn btn-primary w-full mt-2">Add</button>
+                  </form>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                  <button>close</button>
+                </form>
+              </dialog>
+              
+              <div class=" w-full bg-base-200 rounded-lg shadow-md p-1 mt-2">
+                <div class="overflow-x-auto">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Job Title</th>
+                        <th>Company Name</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {work_experience.map((work: {company_name: string; job_title: string; $id: string;}) => (
+                        <tr>
+                          <th>{work.job_title}</th>
+                          <td>{work.company_name}</td>
+                          <td class="flex justify-end">
+                            <button onclick={"work_edit_" + work.$id + ".showModal()"} class="btn btn-primary mr-2">Edit</button>
+
+                            <form method="POST">
+                              <input type="hidden" name="work_id" value={work.$id}/>
+                              <input type="hidden" name="type" id="type" value="work_delete"/>
+                              <button type="submit" class="btn btn-error">-</button>
+                            </form>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {work_experience.map((work: {company_name: string; job_title: string; start_date: string; present: boolean; end_date: string; $id: string; job_description: string;}) => (
+                    <dialog id={"work_edit_" + work.$id} class="modal">
+                      <div class="modal-box">
+                        <h3 class="text-lg font-bold mb-1">Edit a work experience record.</h3>
+                        
+                        <form method="POST">
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Job title</span>
+                            </div>
+                            <input type="text" name="work_job_title" class="input input-bordered" value={work.job_title} required/>
+                          </label>
+
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Job Description</span>
+                            </div>
+                            <textarea name="work_job_description" class="textarea textarea-bordered" rows="10" cols="30" required>{work.job_description}</textarea>
+                          </label>
+
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Company Name</span>
+                            </div>
+                            <input type="text" name="work_company_name" class="input input-bordered" value={work.company_name} required/>
+                          </label>
+
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Start Date</span>
+                            </div>
+                            <input type="text" minlength="6" maxlength="7" placeholder={new Date().getMonth()+1 + "/" + new Date().getFullYear()} pattern="[0-9]{1,2}[\/][0-9]{4}" name="work_start_date" class="input input-bordered" value={work.start_date} required/>
+                          </label>
+
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">End Date</span>
+                            </div>
+                            <div class="flex w-full">
+                              <input type="text" minlength="6" maxlength="7" placeholder={new Date().getMonth()+1 + "/" + new Date().getFullYear()} pattern="[0-9]{1,2}[\/][0-9]{4}" name="work_end_date" class="input input-bordered w-full" value={work.end_date} required/>
+                              <div class="tooltip" data-tip="Present">
+                                <input type="checkbox" class="checkbox h-[3rem] w-[3rem]  ml-1" name="work_present" checked={work.present} />
+                              </div>
+                            </div>
+                          </label>
+
+                          <input type="hidden" name="type" id="type" value="work_edit"/>
+                          <input type="hidden" name="work_id" value={work.$id}/>
+                          <button type="submit" class="btn btn-primary w-full mt-2">Save</button>
+                        </form>
+                      </div>
+                      <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                      </form>
+                    </dialog>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
