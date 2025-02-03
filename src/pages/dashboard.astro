@@ -7,6 +7,7 @@ const { user, databases } = Astro.locals;
 
 const skills = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "skills", [Query.equal("uid", [user.$id])])).documents
 const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "contact-details", [Query.equal("uid", [user.$id])])).documents
+const references = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "reference", [Query.equal("uid", [user.$id])])).documents
 const education = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "education", [Query.equal("uid", [user.$id])])).documents
 const work_experience = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "work-experience", [Query.equal("uid", [user.$id])])).documents
 
@@ -102,6 +103,39 @@ if (Astro.request.method == "POST") {
       break;
     case "contact_delete":
       await databases.deleteDocument(import.meta.env.CV_DB0_ID, "contact-details", data.get("contact_id"))
+      break;
+    case "reference_add":
+      await databases.createDocument(
+        import.meta.env.CV_DB0_ID, 
+        "reference",
+        ID.unique(),
+        {
+          "job_title": data.get("reference_job_title"),
+          "company_name": data.get("reference_company_name"),
+          "name": data.get("reference_name"),
+          "contact_email": (data.get("reference_email") ? data.get("reference_email") : null),
+          "contact_phone": (data.get("reference_phone") ? data.get("reference_phone") : null),
+          "uid": user.$id
+        },
+        [Permission.write(Role.user(user.$id)), Permission.read(Role.user(user.$id))]
+      )
+      break;
+    case "reference_edit":
+      await databases.updateDocument(
+        import.meta.env.CV_DB0_ID, 
+        "reference", 
+        data.get("reference_id"),
+        {
+          "job_title": data.get("reference_job_title"),
+          "company_name": data.get("reference_company_name"),
+          "name": data.get("reference_name"),
+          "contact_email": (data.get("reference_email") ? data.get("reference_email") : null),
+          "contact_phone": (data.get("reference_phone") ? data.get("reference_phone") : null),
+        }
+      )
+      break;
+    case "reference_delete":
+      await databases.deleteDocument(import.meta.env.CV_DB0_ID, "reference", data.get("reference_id"))
       break;
     case "skill_add":
       await databases.createDocument(
@@ -523,8 +557,139 @@ if (Astro.request.method == "POST") {
           <!-- References -->
           <div class="pt-3 pl-3">
             <div class="h-full w-full max-w-4xl bg-base-300 rounded-lg shadow-md p-4">
-              <h1 class="text-xl font-bold text-center">References <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
-              Not Implemented
+              <h1 class="text-xl font-bold text-center">References <button class="btn btn-primary btn-circle btn-sm" onclick="reference_add.showModal()">+</button></h1>
+              <dialog id="reference_add" class="modal">
+                <div class="modal-box">
+                  <h3 class="text-lg font-bold mb-1">Edit a reference.</h3>
+                  
+                  <form method="POST">
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">Job title</span>
+                      </div>
+                      <input type="text" name="reference_job_title" class="input input-bordered" required/>
+                    </label>
+
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">Company Name</span>
+                      </div>
+                      <input type="text" name="reference_company_name" class="input input-bordered" required/>
+                    </label>
+
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">Name</span>
+                      </div>
+                      <input type="text" name="reference_name" class="input input-bordered" required/>
+                    </label>
+
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">Reference Email</span>
+                      </div>
+                      <input type="email" name="reference_email" class="input input-bordered"/>
+                    </label>
+
+                    <label class="form-control w-full">
+                      <div class="label">
+                        <span class="label-text">Reference Phone Number</span>
+                      </div>
+                      <input type="text" name="reference_phone" class="input input-bordered" pattern="0[789][0-9]{9}"/>
+                    </label>
+
+                    <input type="hidden" name="type" id="type" value="reference_add"/>
+                    <button type="submit" class="btn btn-primary w-full mt-2">Save</button>
+                  </form>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                  <button>close</button>
+                </form>
+              </dialog>
+
+              <div class=" w-full bg-base-200 rounded-lg shadow-md p-1 mt-2">
+                <div class="overflow-x-auto">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Company Name</th>
+                        <th>Job Title</th>
+                        <th>Name</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {references.map((reference: {name: string; company_name: string; job_title: string; $id: string;}) => (
+                        <tr>
+                          <th>{reference.company_name}</th>
+                          <td>{reference.job_title}</td>
+                          <td>{reference.name}</td>
+                          <td class="flex justify-end">
+                            <button onclick={"reference_edit_" + reference.$id + ".showModal()"} class="btn btn-primary mr-2">Edit</button>
+
+                            <form method="POST">
+                              <input type="hidden" name="reference_id" value={reference.$id}/>
+                              <input type="hidden" name="type" id="type" value="reference_delete"/>
+                              <button type="submit" class="btn btn-error">-</button>
+                            </form>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {references.map((reference: {name: string; company_name: string; job_title: string; $id: string; contact_email: string; contact_phone: string;}) => (
+                    <dialog id={"reference_edit_" + reference.$id} class="modal">
+                      <div class="modal-box">
+                        <h3 class="text-lg font-bold mb-1">Edit a reference.</h3>
+                        
+                        <form method="POST">
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Job title</span>
+                            </div>
+                            <input type="text" name="reference_job_title" class="input input-bordered" value={reference.job_title} required/>
+                          </label>
+
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Company Name</span>
+                            </div>
+                            <input type="text" name="reference_company_name" class="input input-bordered" value={reference.company_name} required/>
+                          </label>
+
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Name</span>
+                            </div>
+                            <input type="text" name="reference_name" class="input input-bordered" value={reference.name} required/>
+                          </label>
+
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Reference Email</span>
+                            </div>
+                            <input type="email" name="reference_email" class="input input-bordered" value={reference.contact_email}/>
+                          </label>
+
+                          <label class="form-control w-full">
+                            <div class="label">
+                              <span class="label-text">Reference Phone Number</span>
+                            </div>
+                            <input type="text" name="reference_phone" class="input input-bordered" value={reference.contact_phone} pattern="0[789][0-9]{9}"/>
+                          </label>
+
+                          <input type="hidden" name="type" id="type" value="reference_edit"/>
+                          <input type="hidden" name="reference_id" value={reference.$id}/>
+                          <button type="submit" class="btn btn-primary w-full mt-2">Save</button>
+                        </form>
+                      </div>
+                      <form method="dialog" class="modal-backdrop">
+                        <button>close</button>
+                      </form>
+                    </dialog>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
