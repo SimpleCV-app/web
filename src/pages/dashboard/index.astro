@@ -1,10 +1,10 @@
 ---
 import { ID, Permission, Query, Role } from 'node-appwrite';
-import AuthLayout from '../layouts/AuthLayout.astro';
-import { date } from 'astro:schema';
+import AuthLayout from '../../layouts/AuthLayout.astro';
 
 const { user, databases } = Astro.locals;
 
+const pages = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "pages", [Query.equal("uid", [user.$id])]))
 const skills = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "skills", [Query.equal("uid", [user.$id])]))
 const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "contact-details", [Query.equal("uid", [user.$id])]))
 const references = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "reference", [Query.equal("uid", [user.$id])]))
@@ -169,7 +169,34 @@ if (Astro.request.method == "POST") {
         <!-- Pages -->
         <div class="bg-base-300 rounded-lg shadow-md p-4">
           <h1 class="text-xl font-bold text-center">Pages <button class="btn btn-primary btn-circle btn-sm">+</button></h1>
-          Not Implemented
+          <div class=" w-full bg-base-200 rounded-lg shadow-md p-1 mt-2">
+            <div class="overflow-x-auto">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Views</th>
+                    <th>Publised</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pages.documents.map((page: {$id: string; title: string; type: unknown; views: number; published: boolean; }) => (
+                    <tr>
+                      <th>{page.title}</th>
+                      <td>{page.type == "physical" ? "Standard CV" : "Digital CV"}</td>
+                      <td>{page.views}</td>
+                      <td>{page.published ? "Published" : "Draft"}</td>
+                      <td class="flex justify-end">
+                        <a class="btn btn-primary" href={"/dashboard/page/" + page.$id}>Manage</a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
       <div>
