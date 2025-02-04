@@ -5,11 +5,11 @@ import { date } from 'astro:schema';
 
 const { user, databases } = Astro.locals;
 
-const skills = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "skills", [Query.equal("uid", [user.$id])])).documents
-const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "contact-details", [Query.equal("uid", [user.$id])])).documents
-const references = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "reference", [Query.equal("uid", [user.$id])])).documents
-const education = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "education", [Query.equal("uid", [user.$id])])).documents
-const work_experience = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "work-experience", [Query.equal("uid", [user.$id])])).documents
+const skills = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "skills", [Query.equal("uid", [user.$id])]))
+const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "contact-details", [Query.equal("uid", [user.$id])]))
+const references = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "reference", [Query.equal("uid", [user.$id])]))
+const education = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "education", [Query.equal("uid", [user.$id])]))
+const work_experience = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "work-experience", [Query.equal("uid", [user.$id])]))
 
 if (Astro.request.method == "POST") {
   const data = await Astro.request.formData()
@@ -239,7 +239,7 @@ if (Astro.request.method == "POST") {
                       </tr>
                     </thead>
                     <tbody>
-                      {education.map((education: {$id: string; end_year: number; name: string; description: string; start_year: number; present: any; }) => (
+                      {education.documents.map((education: {$id: string; end_year: number; name: string; description: string; start_year: number; present: any; }) => (
                         <tr>
                           <th>{education.name}</th>
                           <td>{education.description}</td>
@@ -258,7 +258,7 @@ if (Astro.request.method == "POST") {
                       ))}
                     </tbody>
                   </table>
-                  {education.map((education: { end_year: number; name: string; description: string; start_year: number; present: any; $id: string; }) => (
+                  {education.documents.map((education: { end_year: number; name: string; description: string; start_year: number; present: any; $id: string; }) => (
                     <dialog id={"education_edit_" + education.$id} class="modal">
                       <div class="modal-box w-max">
                         <h3 class="text-lg font-bold mb-1">Edit an education record.</h3>
@@ -381,7 +381,7 @@ if (Astro.request.method == "POST") {
                       </tr>
                     </thead>
                     <tbody>
-                      {work_experience.map((work: {company_name: string; job_title: string; $id: string;}) => (
+                      {work_experience.documents.map((work: {company_name: string; job_title: string; $id: string;}) => (
                         <tr>
                           <th>{work.job_title}</th>
                           <td>{work.company_name}</td>
@@ -398,7 +398,7 @@ if (Astro.request.method == "POST") {
                       ))}
                     </tbody>
                   </table>
-                  {work_experience.map((work: {company_name: string; job_title: string; start_date: string; present: boolean; end_date: string; $id: string; job_description: string;}) => (
+                  {work_experience.documents.map((work: {company_name: string; job_title: string; start_date: string; present: boolean; end_date: string; $id: string; job_description: string;}) => (
                     <dialog id={"work_edit_" + work.$id} class="modal">
                       <div class="modal-box">
                         <h3 class="text-lg font-bold mb-1">Edit a work experience record.</h3>
@@ -516,7 +516,7 @@ if (Astro.request.method == "POST") {
                       </tr>
                     </thead>
                     <tbody>
-                      {contact_details.map((contact: { type: unknown; value: unknown; $id: string; }) => (
+                      {contact_details.documents.map((contact: { type: unknown; value: unknown; $id: string; }) => (
                         <tr>
                           <th>{contact.type}</th>
                           <td>{contact.value}</td>
@@ -533,7 +533,7 @@ if (Astro.request.method == "POST") {
                       ))}
                     </tbody>
                   </table>
-                  {contact_details.map((contact: { type: unknown; value: string; $id: string; }) => (
+                  {contact_details.documents.map((contact: { type: unknown; value: string; $id: string; }) => (
                     <dialog id={"contact_detail_edit_" + contact.$id} class="modal">
                       <div class="modal-box w-max">
                         <h3 class="text-lg font-bold mb-1">Edit a contact detail.</h3>
@@ -619,7 +619,7 @@ if (Astro.request.method == "POST") {
                       </tr>
                     </thead>
                     <tbody>
-                      {references.map((reference: {name: string; company_name: string; job_title: string; $id: string;}) => (
+                      {references.documents.map((reference: {name: string; company_name: string; job_title: string; $id: string;}) => (
                         <tr>
                           <th>{reference.company_name}</th>
                           <td>{reference.job_title}</td>
@@ -637,7 +637,7 @@ if (Astro.request.method == "POST") {
                       ))}
                     </tbody>
                   </table>
-                  {references.map((reference: {name: string; company_name: string; job_title: string; $id: string; contact_email: string; contact_phone: string;}) => (
+                  {references.documents.map((reference: {name: string; company_name: string; job_title: string; $id: string; contact_email: string; contact_phone: string;}) => (
                     <dialog id={"reference_edit_" + reference.$id} class="modal">
                       <div class="modal-box">
                         <h3 class="text-lg font-bold mb-1">Edit a reference.</h3>
@@ -714,7 +714,7 @@ if (Astro.request.method == "POST") {
               </dialog>
 
               <div class="flex items-center justify-center flex-col overflow-auto">
-                {skills.map((skill: { skill: string; $id: string; }) => (
+                {skills.documents.map((skill: { skill: string; $id: string; }) => (
                   <div class="pt-2 flex flex-row">
                     <input type="text" class="input input-bordered w-max max-w-xs mr-2" disabled value={skill.skill}/>
                     <button class="btn btn-primary mr-2" onclick={"skill_" + skill.$id + "_edit_modal.showModal()"}>Edit</button>
