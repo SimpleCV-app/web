@@ -1,0 +1,308 @@
+---
+import { ID, Permission, Query, Role } from 'node-appwrite';
+import AuthLayout from '../../../layouts/AuthLayout.astro';
+import { loadRenderers } from 'astro:container';
+import { isActionError } from 'astro:actions';
+
+const { user, databases } = Astro.locals;
+const { page_id } = Astro.params!;
+
+const page = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "pages", [Query.equal("uid", [user.$id]), Query.equal("$id", [page_id!])])).documents[0]
+if (page == null) { return Astro.redirect("/dashboard") }
+
+const skills = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "skills", [Query.equal("uid", [user.$id])]))
+const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "contact-details", [Query.equal("uid", [user.$id])]))
+const references = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "reference", [Query.equal("uid", [user.$id])]))
+const education = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "education", [Query.equal("uid", [user.$id])]))
+const work_experience = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "work-experience", [Query.equal("uid", [user.$id])]))
+
+if (Astro.request.method == "POST") {
+    const data = await Astro.request.formData()
+    console.log(data)
+
+    switch (data.get("type")) {
+        case 'save':
+            var edu_list: string[] = []
+            for (const [key, value] of data.entries()) {
+                if (key == "education") {
+                    edu_list.push(value.toString())
+                }
+            }
+
+            var work_experience_list: string[] = []
+            for (const [key, value] of data.entries()) {
+                if (key == "work_experience") {
+                    work_experience_list.push(value.toString())
+                }
+            }
+
+            var contact_details_list: string[] = []
+            for (const [key, value] of data.entries()) {
+                if (key == "contact_details") {
+                    contact_details_list.push(value.toString())
+                }
+            }
+
+            var reference_list: string[] = []
+            for (const [key, value] of data.entries()) {
+                if (key == "reference") {
+                    reference_list.push(value.toString())
+                }
+            }
+
+            var skills_list: string[] = []
+            for (const [key, value] of data.entries()) {
+                if (key == "skills") {
+                    skills_list.push(value.toString())
+                }
+            }
+
+            await databases.updateDocument(
+                import.meta.env.CV_DB0_ID, 
+                "pages", 
+                page_id,
+                {
+                    "education": edu_list,
+                    "work_experience": work_experience_list,
+                    "contact_details": contact_details_list,
+                    "reference": reference_list,
+                    "skills": skills_list,
+                    "cover_letter": data.get("cover_letter")
+                }
+            )
+            break;
+        case 'publish':
+            await databases.updateDocument(
+                import.meta.env.CV_DB0_ID, 
+                "pages", 
+                page_id,
+                {
+                    "published": !page.published
+                }
+            )
+            break;
+        case 'delete':
+        await databases.deleteDocument(
+                import.meta.env.CV_DB0_ID, 
+                "pages", 
+                page_id,
+            )
+            break;
+    }
+
+    return Astro.redirect(Astro.url.pathname)
+}
+
+---
+
+<AuthLayout>
+    <div class="flex items-center justify-center flex-col">
+        <div class="w-3/4">
+            <div>
+                <div class="bg-base-300 rounded-lg shadow-md p-4">
+                    <h1 class="text-xl font-bold text-center">{page.title}</h1>
+
+                    <div class="grid grid-cols-2 flex-col mt-2">
+                        <div class="mr-2 h-full">
+                            <textarea form="save_form" name="cover_letter" class="textarea textarea-bordered w-full h-full" placeholder="Cover Letter" rows="1" cols="1" required>{page.cover_letter}</textarea>
+                        </div>
+
+                        <div class="ml-2">
+                            <div class="stats shadow w-full">
+                                <div class="stat">
+                                  <div class="stat-title text-center">Total Page Views</div>
+                                  <div class="stat-value text-center">{page.views}</div>
+                                </div>
+                            </div>
+                            <div class="grid grid-rows-2 flex-row mt-2">
+                                <form method="post">
+                                    <input type="hidden" name="type" value="publish" />
+                                    <button type="submit" class="btn btn-primary w-full">{page.published ? "Unpublish" : "Publish"}</button>
+                                </form>
+                                <form method="post">
+                                    <input type="hidden" name="type" value="delete" />
+                                    <button type="submit" class="btn btn-error mt-1 w-full">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-1">
+                        <form method="post" id="save_form">
+                            <input type="hidden" name="type" value="save" />
+                            <button type="submit" class="btn btn-primary w-full mt-3">Save</button>
+                        </form>
+                        <a class="btn btn-block mt-2" href="/dashboard">Back To Dashboard</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDIT CONTENT -->
+            <div class="divider">Edit Content</div>
+            <!-- EDIT CONTENT -->
+
+            <!-- Education -->
+            <div class="bg-base-300 rounded-lg shadow-md p-4 my-4">
+                <h1 class="text-xl font-bold text-center">Education</h1>
+
+                <div class=" w-full bg-base-200 rounded-lg shadow-md p-1 mt-2">
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Start Year</th>
+                                <th>End Year</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {education.documents.map((education: {$id: string; end_year: number; name: string; description: string; start_year: number; present: any; }) => (
+                                <tr>
+                                    <th><input type="checkbox" form="save_form" name="education" value={education.$id} checked={page.education.map((i: { $id: string; }) =>i.$id).includes(education.$id) && "checked"} class="checkbox"/></th>
+                                    <td>{education.name}</td>
+                                    <td>{education.description}</td>
+                                    <td>{education.start_year}</td>
+                                    <td>{education.present ? "PRESENT" : education.end_year}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Work Experience -->
+            <div class="bg-base-300 rounded-lg shadow-md p-4 my-4">
+                <h1 class="text-xl font-bold text-center">Work Experience</h1>
+
+                <div class=" w-full bg-base-200 rounded-lg shadow-md p-1 mt-2">
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Job Title</th>
+                                    <th>Company Name</th>
+                                    <th>Description</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {work_experience.documents.map((work: {job_description: string;start_date: string; present: any; end_date: string; company_name: string; job_title: string; $id: string;}) => (
+                                <tr>
+                                    <th><input type="checkbox" form="save_form" name="work_experience" value={work.$id} checked={page.work_experience.map((i: { $id: string; }) =>i.$id).includes(work.$id) && "checked"} class="checkbox"/></th>
+                                    <td>{work.job_title}</td>
+                                    <td>{work.company_name}</td>
+                                    <td>{work.job_description}</td>
+                                    <td>{work.start_date}</td>
+                                    <td>{work.present ? "PRESENT" : work.end_date}</td>
+                                </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Details -->
+            <div class="bg-base-300 rounded-lg shadow-md p-4 my-4">
+                <h1 class="text-xl font-bold text-center">Contact Details</h1>
+
+                <div class="h-full w-full bg-base-200 rounded-lg shadow-md p-1 mt-2">
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                <th></th>
+                                <th>Type</th>
+                                <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {contact_details.documents.map((contact: { type: unknown; value: unknown; $id: string; }) => (
+                                <tr>
+                                    <th><input type="checkbox" form="save_form" name="contact_details" value={contact.$id} checked={page.contact_details.map((i: { $id: string; }) =>i.$id).includes(contact.$id) && "checked"} class="checkbox"/></th>
+                                    <td>{contact.type}</td>
+                                    <td>{contact.value}</td>
+                                </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- References -->
+            <div class="bg-base-300 rounded-lg shadow-md p-4 my-4">
+                <h1 class="text-xl font-bold text-center">References</h1>
+
+                <div class=" w-full bg-base-200 rounded-lg shadow-md p-1 mt-2">
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Company Name</th>
+                                    <th>Job Title</th>
+                                    <th>Name</th>
+                                    <th>Contact Email</th>
+                                    <th>Contact Phone</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {references.documents.map((reference: {contact_email: string;contact_phone: string;name: string; company_name: string; job_title: string; $id: string;}) => (
+                                <tr>
+                                    <th><input type="checkbox" form="save_form" name="reference" value={reference.$id} checked={page.reference.map((i: { $id: string; }) =>i.$id).includes(reference.$id) && "checked"} class="checkbox"/></th>
+                                    <td>{reference.company_name}</td>
+                                    <td>{reference.job_title}</td>
+                                    <td>{reference.name}</td>
+                                    <td>{reference.contact_email}</td>
+                                    <td>{reference.contact_phone}</td>
+                                </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="bg-base-300 rounded-lg shadow-md p-4 my-4">
+                <h1 class="text-xl font-bold text-center">Skills</h1>
+
+                <div class="h-full w-full bg-base-200 rounded-lg shadow-md p-1 mt-2">
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Skill</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {skills.documents.map((skill: { skill: unknown; $id: string; }) => (
+                                <tr>
+                                    <th><input type="checkbox" form="save_form" name="skills" value={skill.$id} checked={page.skills.map((i: { $id: string; }) =>i.$id).includes(skill.$id) && "checked"} class="checkbox"/></th>
+                                    <td>{skill.skill}</td>
+                                </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Images -->
+            <div class="bg-base-300 rounded-lg shadow-md p-4 my-4">
+                <h1 class="text-xl font-bold text-center">Images</h1>
+
+                <div class="flex items-center justify-center">
+                    <p class="italic">Images are not currently supported</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</AuthLayout>
