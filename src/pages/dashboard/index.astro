@@ -229,7 +229,7 @@ if (Astro.request.method == "POST") {
                       <div class="label">
                         <span class="label-text">Start Year</span>
                       </div>
-                      <input type="number" min="1900" max={new Date().getFullYear()} name="education_start_year" class="input input-bordered" required/>
+                      <input type="number" min="1900" max={new Date().getFullYear()+10} name="education_start_year" class="input input-bordered" required/>
                     </label>
 
                     <label class="form-control w-full">
@@ -237,7 +237,7 @@ if (Astro.request.method == "POST") {
                         <span class="label-text">End Year</span>
                       </div>
                       <div class="flex ">
-                        <input type="number" min="1900" max={new Date().getFullYear()} name="education_end_year" id="education_end_year" class="w-full input input-bordered" value={education.end_year}/>
+                        <input type="number" min="1900" max={new Date().getFullYear()+10} name="education_end_year" id="education_end_year" class="w-full input input-bordered" value={education.end_year}/>
                         <div class="tooltip" data-tip="Present">
                           <input type="checkbox" class="checkbox h-[3rem] w-[3rem]  ml-1" name="education_present" id="education_present" />
                         </div>
@@ -309,7 +309,7 @@ if (Astro.request.method == "POST") {
                             <div class="label">
                               <span class="label-text">Start Year</span>
                             </div>
-                            <input type="number" min="1900" max={new Date().getFullYear()} name="education_start_year" class="input input-bordered" value={education.start_year} required/>
+                            <input type="number" min="1900" max={new Date().getFullYear()+10} name="education_start_year" class="input input-bordered" value={education.start_year} required/>
                           </label>
 
                           <label class="form-control w-full">
@@ -317,7 +317,7 @@ if (Astro.request.method == "POST") {
                               <span class="label-text">End Year</span>
                             </div>
                             <div class="flex ">
-                              <input type="number" min="1900" max={new Date().getFullYear()} name="education_end_year" id="education_end_year" class="w-full input input-bordered" value={education.end_year}/>
+                              <input type="number" min="1900" max={new Date().getFullYear()+10} name="education_end_year" id="education_end_year" class="w-full input input-bordered" value={education.end_year}/>
                               <div class="tooltip" data-tip="Present">
                                 <input type="checkbox" class="checkbox h-[3rem] w-[3rem]  ml-1" name="education_present" id="education_present" checked={education.present} />
                               </div>
@@ -507,8 +507,8 @@ if (Astro.request.method == "POST") {
                           break;
                         case 'number':
                           valueBox.disabled = false
-                          valueBox.placeholder = "07123456789"
-                          valueBox.pattern = "0[789][0-9]{9}"
+                          valueBox.placeholder = "+44 7123456789"
+                          valueBox.pattern = "^\+[1-9]\d{0,2}\s?\d+(?:-\d+)*$"
                           valueBox.type = "text"
                           break;
                       }
@@ -566,7 +566,7 @@ if (Astro.request.method == "POST") {
                         <h3 class="text-lg font-bold mb-1">Edit a contact detail.</h3>
                         
                         <form method="POST">
-                          <input type={contact.type == "email" ? "email" : "text"} class="input input-bordered w-full" value={contact.value} name="value" pattern={contact.type == "number" ? "0[789][0-9]{9}" : null}/>
+                          <input type={contact.type == "email" ? "email" : "text"} class="input input-bordered w-full" value={contact.value} name="value" pattern={contact.type == "number" ? "^\+[1-9]\d{0,2}\s?\d+(?:-\d+)*$" : null}/>
                           <input type="hidden" name="type" id="type" value="contact_edit"/>
                           <input type="hidden" name="contact_id" value={contact.$id}/>
                           <button type="submit" class="btn btn-primary w-full mt-2">Save</button>
