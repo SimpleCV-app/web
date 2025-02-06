@@ -1,8 +1,6 @@
 ---
 import { ID, Permission, Query, Role } from 'node-appwrite';
 import AuthLayout from '../../../layouts/AuthLayout.astro';
-import { loadRenderers } from 'astro:container';
-import { isActionError } from 'astro:actions';
 
 const { user, databases } = Astro.locals;
 const { page_id } = Astro.params!;
@@ -15,6 +13,8 @@ const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID
 const references = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "reference", [Query.equal("uid", [user.$id])]))
 const education = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "education", [Query.equal("uid", [user.$id])]))
 const work_experience = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "work-experience", [Query.equal("uid", [user.$id])]))
+
+const page_templates = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "page-templates", [Query.equal("type", [page.type]), Query.equal("published", [true])]))
 
 if (Astro.request.method == "POST") {
     const data = await Astro.request.formData()
@@ -67,7 +67,9 @@ if (Astro.request.method == "POST") {
                     "contact_details": contact_details_list,
                     "reference": reference_list,
                     "skills": skills_list,
-                    "cover_letter": data.get("cover_letter")
+                    "cover_letter": data.get("cover_letter"),
+                    "title": data.get("title"),
+                    "type": data.get("cv_type")
                 }
             )
             break;
@@ -81,8 +83,18 @@ if (Astro.request.method == "POST") {
                 }
             )
             break;
+        case 'update_template':
+            await databases.updateDocument(
+                import.meta.env.CV_DB0_ID, 
+                "pages", 
+                page_id,
+                {
+                    "template": data.get("template_id")
+                }
+            )
+            break;
         case 'delete':
-        await databases.deleteDocument(
+            await databases.deleteDocument(
                 import.meta.env.CV_DB0_ID, 
                 "pages", 
                 page_id,
@@ -102,26 +114,72 @@ if (Astro.request.method == "POST") {
                 <div class="bg-base-300 rounded-lg shadow-md p-4">
                     <h1 class="text-xl font-bold text-center">{page.title}</h1>
 
-                    <div class="grid grid-cols-2 flex-col mt-2">
+                    <div class="grid grid-cols-2 flex-row mt-2">
                         <div class="mr-2 h-full">
-                            <textarea form="save_form" name="cover_letter" class="textarea textarea-bordered w-full h-full" placeholder="Cover Letter" rows="1" cols="1" required>{page.cover_letter}</textarea>
+                            <textarea form="save_form" name="cover_letter" class="textarea w-full h-full" placeholder="Cover Letter" rows="1" cols="1" required>{page.cover_letter}</textarea>
                         </div>
 
                         <div class="ml-2">
                             <div class="stats shadow w-full">
                                 <div class="stat">
                                   <div class="stat-title text-center">Total Page Views</div>
-                                  <div class="stat-value text-center">{page.views}</div>
+                                  <div class="stat-value text-center">{page.type == "physical" ? "N/A" : page.views}</div>
                                 </div>
+                                <div class="stat"> 
+                                    <div class="stat-title text-center">Click Through Rate</div>
+                                    <div class="stat-value text-center">{page.ctr}</div>
+                                  </div>
                             </div>
-                            <div class="grid grid-rows-2 flex-row mt-2">
-                                <form method="post">
-                                    <input type="hidden" name="type" value="publish" />
-                                    <button type="submit" class="btn btn-primary w-full">{page.published ? "Unpublish" : "Publish"}</button>
+
+                            <input type="text" form="save_form" name="title" placeholder="Title" value={page.title} class="input w-full mt-2" />
+                            <select form="save_form" name="cv_type" class="select w-full mt-2">
+                                <option value="physical" selected={page.type == "physical" && true}>Standard CV</option>
+                                <option value="digital" selected={page.type == "digital" && true}>Digital CV</option>
+                              </select>
+                            <button class="btn btn-primary w-full mt-2" onclick="template_selector.showModal()">Edit Template</button>
+
+                            <dialog id="template_selector" class="modal">
+                                <div class="modal-box">
+                                    <h3 class="text-lg font-bold mb-1">Choose a template.</h3>
+                                    
+                                    <div class="carousel carousel-vertical">
+                                        {page_templates.documents.map((template: {$id: string; name: string; owner_name: string; description: string; }) => (
+                                            <div class="carousel-item h-full w-full">
+                                                <div>
+                                                    <h1 class="text-4xl font-bold">{template.name} {template.$id == page.template && <span class="badge badge-neutral m-auto p-3">Current</span>}</h1>
+                                                    <p class="text-sm text-gray-500">By {template.owner_name}</p>
+
+                                                    <p class="mt-3">{template.description}</p>
+
+                                                    <form method="POST" class="pt-2">
+                                                        <input type="hidden" name="type" value="update_template" />
+                                                        <input type="hidden" name="template_id" value={template.$id} />
+                                                        <button class="btn btn-primary w-full bottom-0">Use</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                </div>
+                                <form method="dialog" class="modal-backdrop">
+                                    <button>close</button>
                                 </form>
-                                <form method="post">
+                            </dialog>
+
+                            <div class="grid grid-cols-2 flex-row mt-2">
+                                {
+                                    page.type == "physical" ?
+                                    <button type="submit" class="btn btn-primary w-full" disabled>Download</button>
+                                    :
+                                    <form method="post" class="mr-1">
+                                        <input type="hidden" name="type" value="publish" />
+                                        <button type="submit" class="btn btn-primary w-full">{page.published ? "Unpublish" : "Publish"}</button>
+                                    </form>
+                                }
+                                <form method="post" class="ml-1">
                                     <input type="hidden" name="type" value="delete" />
-                                    <button type="submit" class="btn btn-error mt-1 w-full">Delete</button>
+                                    <button type="submit" class="btn btn-error w-full">Delete</button>
                                 </form>
                             </div>
                         </div>
