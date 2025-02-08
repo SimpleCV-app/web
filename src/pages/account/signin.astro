@@ -58,29 +58,35 @@ if (Astro.request.method === "POST") {
     <div class="flex items-center justify-center">
         <div class="w-full max-w-md bg-base-300 rounded-lg shadow-md p-6">
             <h2 class="text-2xl font-semibold text-white text-center">Login</h2>
-            <p class="mt-2 text-center text-primary"><a href="/account/signup">Create a new Account</a></p>
-            <form class="mt-4" method="POST">
-            <div class="flex flex-col mb-4">
-                <input
-                id="email" name="email" placeholder="Email" type="email" 
-                class="input input-bordered w-full"
-                required
-                />
-            </div>
-            <div class="flex flex-col mb-6">
-                <input
-                id="password"
-                name="password"
-                placeholder="Password"
-                type="password"
-                class="input input-bordered w-full"
-                required
-                />
-            </div>
-            <button type="submit" class="w-full w-full btn btn-primary">
-                Sign in
-            </button>
-            {errors && <p class="pt-2 px-4 text-red-600 text-center">{errors}</p>}
+            <form class="mt-6" method="POST">
+                <div class="flex flex-col mb-2">
+                    <input
+                    id="email" name="email" placeholder="Email" type="email" 
+                    class="input w-full"
+                    required
+                    />
+                </div>
+                <div class="flex flex-col mb-4">
+                    <input
+                    id="password"
+                    name="password"
+                    placeholder="Password"
+                    type="password"
+                    class="input w-full"
+                    required
+                    />
+                </div>
+                <div class="flex grid grid-cols-2">
+                    <div class="pr-1">
+                        <button type="submit" class="w-full btn btn-primary">
+                            Sign in
+                        </button>
+                    </div>
+                    <div class="pl-1">
+                        <a class="w-full btn btn-block" href="/account/signup">Create an Account</a>
+                    </div>
+                </div>
+                {errors && <p class="pt-2 px-4 text-red-600 text-center">{errors}</p>}
             </form>
         </div>
     </div>
