@@ -1,11 +1,10 @@
-FROM node:lts AS runtime
+FROM node:lts AS build
 WORKDIR /app
 
 COPY . .
 
 RUN npm install
-RUN npm run build
-
+RUN export APPWRITE_KEY=placeholder PUBLIC_APPWRITE_ENDPOINT=placeholder PUBLIC_APPWRITE_PROJECT=placeholder DB0_ID=placeholder DEV_INSTANCE=placeholder && npm run build
 ENV HOST=0.0.0.0
 ENV PORT=80
 
