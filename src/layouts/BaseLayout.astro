@@ -8,7 +8,6 @@ const { user } = Astro.locals;
 var profile_picture = ""
 if (user) {var profile_picture = "https://cloud.appwrite.io/v1/avatars/initials?name=" + user.name }
 ---
-{console.log(import.meta.env.DB0_ID)}
 <!doctype html>
 <html lang="en">
 	<head>
