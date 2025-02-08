@@ -23,7 +23,7 @@ if (Astro.request.method == "POST") {
         ID.unique(),
         {
           "uid": user.$id,
-          "title": data.get("page_cover_letter"), 
+          "title": data.get("page_name"), 
           "cover_letter": data.get("page_cover_letter"), 
           "type": data.get("page_type"),
           "views": 0, 
