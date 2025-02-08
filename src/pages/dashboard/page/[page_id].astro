@@ -135,7 +135,7 @@ if (Astro.request.method == "POST") {
                             <select form="save_form" name="cv_type" class="select w-full mt-2">
                                 <option value="physical" selected={page.type == "physical" && true}>Standard CV</option>
                                 <option value="digital" selected={page.type == "digital" && true}>Digital CV</option>
-                              </select>
+                            </select>
                             <button class="btn btn-primary w-full mt-2" onclick="template_selector.showModal()">Edit Template</button>
 
                             <dialog id="template_selector" class="modal">
