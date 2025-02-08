@@ -15,6 +15,7 @@ interface ImportMetaEnv {
   readonly PUBLIC_APPWRITE_PROJECT: string;
   readonly APPWRITE_KEY: string;
   readonly DB0_ID: string;
+  readonly DEV_INSTANCE: string;
 }
 
 interface ImportMeta {
