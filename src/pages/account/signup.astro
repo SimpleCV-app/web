@@ -3,6 +3,10 @@ import { SESSION_COOKIE, createAdminClient } from "../../server/appwrite.js";
 import { ID, AppwriteException, Permission, Role } from "node-appwrite";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
+if (import.meta.env.SIGNUP_DISABLED == "true") {
+    return Astro.rewrite("/e/signup_disabled")
+}
+
 var errors = ""
 if (Astro.request.method === "POST") {
     // Extract the form data
