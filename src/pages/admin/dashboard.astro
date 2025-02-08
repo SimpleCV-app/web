@@ -32,7 +32,7 @@ if (Astro.request.method === "POST") {
                 import.meta.env.DB0_ID,
                 "meta",
                 "ROOT",
-                {"maintenance_mode": !meta.maintenance_mode}
+                {"maintenance_mode": !meta.maintenance_mode, "alert_message": (!meta.maintenance_mode ? "SimpleCV is currently in maintenance mode. This means you cant read or change your data." : null)}
             )
             break;
         case "alert_message":
