@@ -5,16 +5,16 @@ import AuthLayout from '../../../layouts/AuthLayout.astro';
 const { user, databases } = Astro.locals;
 const { page_id } = Astro.params!;
 
-const page = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "pages", [Query.equal("uid", [user.$id]), Query.equal("$id", [page_id!])])).documents[0]
+const page = (await databases.listDocuments(import.meta.env.DB0_ID, "pages", [Query.equal("uid", [user.$id]), Query.equal("$id", [page_id!])])).documents[0]
 if (page == null) { return Astro.redirect("/dashboard") }
 
-const skills = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "skills", [Query.equal("uid", [user.$id])]))
-const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "contact-details", [Query.equal("uid", [user.$id])]))
-const references = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "reference", [Query.equal("uid", [user.$id])]))
-const education = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "education", [Query.equal("uid", [user.$id])]))
-const work_experience = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "work-experience", [Query.equal("uid", [user.$id])]))
+const skills = (await databases.listDocuments(import.meta.env.DB0_ID, "skills", [Query.equal("uid", [user.$id])]))
+const contact_details = (await databases.listDocuments(import.meta.env.DB0_ID, "contact-details", [Query.equal("uid", [user.$id])]))
+const references = (await databases.listDocuments(import.meta.env.DB0_ID, "reference", [Query.equal("uid", [user.$id])]))
+const education = (await databases.listDocuments(import.meta.env.DB0_ID, "education", [Query.equal("uid", [user.$id])]))
+const work_experience = (await databases.listDocuments(import.meta.env.DB0_ID, "work-experience", [Query.equal("uid", [user.$id])]))
 
-const page_templates = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "page-templates", [Query.equal("type", [page.type]), Query.equal("published", [true])]))
+const page_templates = (await databases.listDocuments(import.meta.env.DB0_ID, "page-templates", [Query.equal("type", [page.type]), Query.equal("published", [true])]))
 
 if (Astro.request.method == "POST") {
     const data = await Astro.request.formData()
@@ -58,7 +58,7 @@ if (Astro.request.method == "POST") {
             }
 
             await databases.updateDocument(
-                import.meta.env.CV_DB0_ID, 
+                import.meta.env.DB0_ID, 
                 "pages", 
                 page_id,
                 {
@@ -75,7 +75,7 @@ if (Astro.request.method == "POST") {
             break;
         case 'publish':
             await databases.updateDocument(
-                import.meta.env.CV_DB0_ID, 
+                import.meta.env.DB0_ID, 
                 "pages", 
                 page_id,
                 {
@@ -85,7 +85,7 @@ if (Astro.request.method == "POST") {
             break;
         case 'update_template':
             await databases.updateDocument(
-                import.meta.env.CV_DB0_ID, 
+                import.meta.env.DB0_ID, 
                 "pages", 
                 page_id,
                 {
@@ -95,7 +95,7 @@ if (Astro.request.method == "POST") {
             break;
         case 'delete':
             await databases.deleteDocument(
-                import.meta.env.CV_DB0_ID, 
+                import.meta.env.DB0_ID, 
                 "pages", 
                 page_id,
             )

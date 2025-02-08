@@ -61,7 +61,7 @@ export function createSessionClient(request) {
 // Session client, used to make requests on behalf of the logged in user
 export async function getMeta() {
   const { databases } = createAdminClient()
-  return await databases.getDocument(import.meta.env.CV_DB0_ID, "meta", "ROOT")
+  return await databases.getDocument(import.meta.env.DB0_ID, "meta", "ROOT")
 }
 
 // Helper function to parse cookies

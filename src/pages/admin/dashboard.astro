@@ -11,9 +11,9 @@ const { users, databases } = createAdminClient();
 
 const total_users = (await users.list()).total
 const total_views = "N/A"
-const total_pages = (await databases.listDocuments(import.meta.env.CV_DB0_ID, 'pages')).total
+const total_pages = (await databases.listDocuments(import.meta.env.DB0_ID, 'pages')).total
 
-const meta = await databases.getDocument(import.meta.env.CV_DB0_ID, "meta", "ROOT")
+const meta = await databases.getDocument(import.meta.env.DB0_ID, "meta", "ROOT")
 
 if (Astro.request.method === "POST") {
     var data = await Astro.request.formData()
@@ -21,15 +21,15 @@ if (Astro.request.method === "POST") {
     switch (data.get("type")) {
         case "read-only":
             await databases.updateDocument(
-                import.meta.env.CV_DB0_ID,
+                import.meta.env.DB0_ID,
                 "meta",
                 "ROOT",
-                {"read_only_mode": !meta.read_only_mode, "alert_message": (!meta.read_only_mode ? "CV Buddy is currently in read-only mode. This means you can't change any of your data, but you can read it." : null)}
+                {"read_only_mode": !meta.read_only_mode, "alert_message": (!meta.read_only_mode ? "SimpleCV is currently in read-only mode. This means you can't change any of your data, but you can read it." : null)}
             )
             break;
         case "maintenance_mode":
             await databases.updateDocument(
-                import.meta.env.CV_DB0_ID,
+                import.meta.env.DB0_ID,
                 "meta",
                 "ROOT",
                 {"maintenance_mode": !meta.maintenance_mode}
@@ -37,7 +37,7 @@ if (Astro.request.method === "POST") {
             break;
         case "alert_message":
             await databases.updateDocument(
-                import.meta.env.CV_DB0_ID,
+                import.meta.env.DB0_ID,
                 "meta",
                 "ROOT",
                 {"alert_message": (data.get("alert_message") == "" ? null : data.get("alert_message"))}

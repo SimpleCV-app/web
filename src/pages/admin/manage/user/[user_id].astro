@@ -8,7 +8,7 @@ const { user_id } = Astro.params!;
 
 const managed_user = (await users.list([Query.equal("$id", [user_id!.toString()])])).users[0]
 const sessions = (await users.listSessions(user_id!.toString()))
-const db_response = await databases.listDocuments(import.meta.env.CV_DB0_ID, "user", [Query.equal("$id", [user_id!.toString()])])
+const db_response = await databases.listDocuments(import.meta.env.DB0_ID, "user", [Query.equal("$id", [user_id!.toString()])])
 var db_record = null
 if (db_response.total == 1) {
     db_record = db_response.documents[0]
@@ -36,7 +36,7 @@ if (Astro.request.method === "POST") {
             break;
         case 'initialisation':
             databases.createDocument(
-                import.meta.env.CV_DB0_ID,
+                import.meta.env.DB0_ID,
                 "user",
                 user_id!.toString(),
                 {
@@ -56,7 +56,7 @@ if (Astro.request.method === "POST") {
             break;
         case 'delete':
             databases.deleteDocument(
-                import.meta.env.CV_DB0_ID,
+                import.meta.env.DB0_ID,
                 "user",
                 user_id!.toString(),
             )

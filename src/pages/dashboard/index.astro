@@ -4,12 +4,12 @@ import AuthLayout from '../../layouts/AuthLayout.astro';
 
 const { user, databases } = Astro.locals;
 
-const pages = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "pages", [Query.equal("uid", [user.$id])]))
-const skills = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "skills", [Query.equal("uid", [user.$id])]))
-const contact_details = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "contact-details", [Query.equal("uid", [user.$id])]))
-const references = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "reference", [Query.equal("uid", [user.$id])]))
-const education = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "education", [Query.equal("uid", [user.$id])]))
-const work_experience = (await databases.listDocuments(import.meta.env.CV_DB0_ID, "work-experience", [Query.equal("uid", [user.$id])]))
+const pages = (await databases.listDocuments(import.meta.env.DB0_ID, "pages", [Query.equal("uid", [user.$id])]))
+const skills = (await databases.listDocuments(import.meta.env.DB0_ID, "skills", [Query.equal("uid", [user.$id])]))
+const contact_details = (await databases.listDocuments(import.meta.env.DB0_ID, "contact-details", [Query.equal("uid", [user.$id])]))
+const references = (await databases.listDocuments(import.meta.env.DB0_ID, "reference", [Query.equal("uid", [user.$id])]))
+const education = (await databases.listDocuments(import.meta.env.DB0_ID, "education", [Query.equal("uid", [user.$id])]))
+const work_experience = (await databases.listDocuments(import.meta.env.DB0_ID, "work-experience", [Query.equal("uid", [user.$id])]))
 
 if (Astro.request.method == "POST") {
   const data = await Astro.request.formData()
@@ -18,7 +18,7 @@ if (Astro.request.method == "POST") {
   switch (data.get("type")) {
     case "education_add":
       await databases.createDocument(
-        import.meta.env.CV_DB0_ID, 
+        import.meta.env.DB0_ID, 
         "education",
         ID.unique(),
         {
@@ -34,7 +34,7 @@ if (Astro.request.method == "POST") {
       break;
     case "education_edit":
       await databases.updateDocument(
-        import.meta.env.CV_DB0_ID, 
+        import.meta.env.DB0_ID, 
         "education", 
         data.get("education_id"),
         {
@@ -47,11 +47,11 @@ if (Astro.request.method == "POST") {
       )
       break;
     case "education_delete":
-      await databases.deleteDocument(import.meta.env.CV_DB0_ID, "education", data.get("education_id"))
+      await databases.deleteDocument(import.meta.env.DB0_ID, "education", data.get("education_id"))
       break;
     case "work_add":
       await databases.createDocument(
-        import.meta.env.CV_DB0_ID, 
+        import.meta.env.DB0_ID, 
         "work-experience", 
         ID.unique(),
         {
@@ -68,7 +68,7 @@ if (Astro.request.method == "POST") {
       break;
     case "work_edit":
       await databases.updateDocument(
-        import.meta.env.CV_DB0_ID, 
+        import.meta.env.DB0_ID, 
         "work-experience", 
         data.get("work_id"),
         {
@@ -82,11 +82,11 @@ if (Astro.request.method == "POST") {
       )
       break;
     case "work_delete":
-      await databases.deleteDocument(import.meta.env.CV_DB0_ID, "work-experience", data.get("work_id"))
+      await databases.deleteDocument(import.meta.env.DB0_ID, "work-experience", data.get("work_id"))
       break;
     case "contact_add":
       await databases.createDocument(
-        import.meta.env.CV_DB0_ID, 
+        import.meta.env.DB0_ID, 
         "contact-details",
         ID.unique(),
         {"type": data.get("contact_type"), "value": data.get("value"), "uid": user.$id},
@@ -95,18 +95,18 @@ if (Astro.request.method == "POST") {
       break;
     case "contact_edit":
       await databases.updateDocument(
-        import.meta.env.CV_DB0_ID, 
+        import.meta.env.DB0_ID, 
         "contact-details", 
         data.get("contact_id"),
         {"value": data.get("value")}
       )
       break;
     case "contact_delete":
-      await databases.deleteDocument(import.meta.env.CV_DB0_ID, "contact-details", data.get("contact_id"))
+      await databases.deleteDocument(import.meta.env.DB0_ID, "contact-details", data.get("contact_id"))
       break;
     case "reference_add":
       await databases.createDocument(
-        import.meta.env.CV_DB0_ID, 
+        import.meta.env.DB0_ID, 
         "reference",
         ID.unique(),
         {
@@ -122,7 +122,7 @@ if (Astro.request.method == "POST") {
       break;
     case "reference_edit":
       await databases.updateDocument(
-        import.meta.env.CV_DB0_ID, 
+        import.meta.env.DB0_ID, 
         "reference", 
         data.get("reference_id"),
         {
@@ -135,11 +135,11 @@ if (Astro.request.method == "POST") {
       )
       break;
     case "reference_delete":
-      await databases.deleteDocument(import.meta.env.CV_DB0_ID, "reference", data.get("reference_id"))
+      await databases.deleteDocument(import.meta.env.DB0_ID, "reference", data.get("reference_id"))
       break;
     case "skill_add":
       await databases.createDocument(
-        import.meta.env.CV_DB0_ID, 
+        import.meta.env.DB0_ID, 
         "skills",
         ID.unique(),
         {"skill": data.get("skill"), "uid": user.$id},
@@ -148,14 +148,14 @@ if (Astro.request.method == "POST") {
       break;
     case "skill_edit":
       await databases.updateDocument(
-        import.meta.env.CV_DB0_ID, 
+        import.meta.env.DB0_ID, 
         "skills", 
         data.get("skill_id"),
         {"skill": data.get("skill")}
       )
       break;
     case "skill_delete":
-      await databases.deleteDocument(import.meta.env.CV_DB0_ID, "skills", data.get("skill_id"))
+      await databases.deleteDocument(import.meta.env.DB0_ID, "skills", data.get("skill_id"))
       break;
   }
   return Astro.redirect("/dashboard")

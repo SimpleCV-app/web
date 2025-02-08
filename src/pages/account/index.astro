@@ -27,7 +27,7 @@ if (Astro.request.method === "POST") {
             case 'delete':
                 const { users } = createAdminClient()
                 databases.deleteDocument(
-                    import.meta.env.CV_DB0_ID,
+                    import.meta.env.DB0_ID,
                     "user",
                     user.$id,
                 )
