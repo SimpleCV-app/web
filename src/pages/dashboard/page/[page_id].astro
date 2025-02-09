@@ -3,6 +3,10 @@ import { ID, Permission, Query, Role } from 'node-appwrite';
 import AuthLayout from '../../../layouts/AuthLayout.astro';
 
 const { user, databases } = Astro.locals;
+if (!user) {
+    return Astro.redirect("/account/signin");
+}
+
 const { page_id } = Astro.params!;
 
 const page = (await databases.listDocuments(import.meta.env.DB0_ID, "pages", [Query.equal("uid", [user.$id]), Query.equal("$id", [page_id!])])).documents[0]
