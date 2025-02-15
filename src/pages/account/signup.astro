@@ -40,7 +40,7 @@ if (Astro.request.method === "POST") {
                 "enabled": true
             },
             [
-                Permission.write(Role.user(new_account.$id)),
+                Permission.update(Role.user(new_account.$id)),
                 Permission.read(Role.user(new_account.$id))
             ]
         )
