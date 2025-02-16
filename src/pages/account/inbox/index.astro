@@ -1,0 +1,51 @@
+---
+import { Query } from "node-appwrite";
+import AuthLayout from "../../../layouts/AuthLayout.astro";
+
+const { user, databases } = Astro.locals;
+const { message_id } = Astro.params!;
+if (!user) {
+    return Astro.redirect("/account/signin");
+}
+
+const user_record = await databases.getDocument(import.meta.env.DB0_ID, "user", user.$id)
+
+const unread_messages = (await databases.listDocuments(import.meta.env.DB0_ID, "messages", [Query.greaterThan("expire", [new Date().toISOString()])]))
+unread_messages.documents = unread_messages.documents.filter((message: { $id: any; }) => {
+	return !(user_record.seen_messages.includes(message.$id))
+})
+const read_messages = (await databases.listDocuments(import.meta.env.DB0_ID, "messages", [Query.equal("$id", user_record.seen_messages), Query.greaterThan("expire", [new Date().toISOString()])]))
+---
+<AuthLayout>
+    <div class="flex items-center justify-center pt-4">
+        <div class="overflow-x-auto w-max rounded-lg shadow-md bg-base-300 p-6 max-w-xl">
+            <ul>
+                {unread_messages.documents.map((message: { $id: string; title: string; from: string; content: string; }) => (
+                    <li class="rounded-box hover:bg-base-100 p-2 transition duration-300">
+                        <a href={"/account/inbox/" + message.$id}>
+                            <h1 class="font-bold text-4xl">{message.title}</h1>
+                            <p class="text-sm text-gray-500">From {message.from}</p>
+                            <p class="mt-1 break-normal">{message.content.length > 90 ? message.content.substring(0, 90) + "..." : message.content}</p>
+                        </a>
+                    </li>
+                ))}
+                {unread_messages.documents.length == 0 && <p class="text-center text-gray-500 italic">No unread messages to show.</p>}
+            </ul>
+            
+            <div class="divider">Read Messages</div>
+
+            <ul>
+                {read_messages.documents.map((message: { $id: string; title: string; from: string; content: string; }) => (
+                    <li class="rounded-box hover:bg-base-100 p-2 transition duration-300 [&:not(:hover)]:text-gray-500">
+                        <a href={"/account/inbox/" + message.$id}>
+                            <h1 class="font-bold text-4xl">{message.title}</h1>
+                            <p class="text-sm text-gray-500">From {message.from}</p>
+                            <p class="mt-1 break-normal">{message.content.length > 90 ? message.content.substring(0, 90) + "..." : message.content}</p>
+                        </a>
+                    </li>
+                ))}
+                {read_messages.total == 0 && <p class="text-center text-gray-500 italic">No read messages to show.</p>}
+            </ul>
+        </div>
+    </div>
+</AuthLayout>

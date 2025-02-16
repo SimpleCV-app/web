@@ -1,0 +1,38 @@
+---
+import { Query } from "node-appwrite";
+import AuthLayout from "../../../layouts/AuthLayout.astro";
+
+const { user, databases } = Astro.locals;
+const { message_id } = Astro.params!;
+if (!user) {
+    return Astro.redirect("/account/signin");
+}
+
+var message = (await databases.listDocuments(import.meta.env.DB0_ID, "messages", [Query.equal("$id", [message_id!.toString()]), Query.greaterThan("expire", [new Date().toISOString()])])).documents[0]
+if (!message) {
+    return new Response(null, {status: 404})
+}
+
+const user_record = await databases.getDocument(import.meta.env.DB0_ID, "user", user.$id)
+
+if (!(user_record.seen_messages.includes(message_id!.toString()))) {
+    user_record.seen_messages.push(message_id!.toString())
+    await databases.updateDocument(
+        import.meta.env.DB0_ID,
+        "user",
+        user.$id,
+        {"seen_messages": user_record.seen_messages}
+    )
+}
+---
+<AuthLayout>
+    <div class="flex items-center justify-center pt-4">
+        <div class="overflow-x-auto w-max rounded-lg shadow-md bg-base-300 p-6 max-w-xl">
+            <h1 class="font-bold text-4xl">{message.title}</h1>
+            <p class="text-sm text-gray-500">From {message.from}</p>
+            <p class="mt-1 break-normal">{message.content}</p>
+
+            <a class="btn btn-block mt-6" href="/account/inbox">Back To Inbox</a>
+        </div>
+    </div>
+</AuthLayout>

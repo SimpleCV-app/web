@@ -1,12 +1,38 @@
 ---
+import { Query } from "node-appwrite";
 import { getMeta } from "../server/appwrite";
 
 const meta = await getMeta();
 
-const { user } = Astro.locals;
+const { user, databases } = Astro.locals;
 
 var profile_picture = ""
-if (user) {var profile_picture = "https://cloud.appwrite.io/v1/avatars/initials?name=" + user.name }
+var messages = null
+if (user) {
+	var user_record = await databases.getDocument(import.meta.env.DB0_ID, "user", user.$id)
+
+	var profile_picture = "https://cloud.appwrite.io/v1/avatars/initials?name=" + user.name
+
+	var messages = (await databases.listDocuments(import.meta.env.DB0_ID, "messages", [Query.equal("type", ["message"]), Query.greaterThan("expire", [new Date().toISOString()])]))
+	messages.documents = messages.documents.filter((message: { $id: any; }) => {
+		return !(user_record.seen_messages.includes(message.$id))
+	})
+
+	var popup_messages = (await databases.listDocuments(import.meta.env.DB0_ID, "messages", [Query.equal("type", ["popup"]), Query.greaterThan("expire", [new Date().toISOString()])]))
+	popup_messages.documents = popup_messages.documents.filter((message: { $id: any; }) => {
+		return !(user_record.seen_messages.includes(message.$id))
+	})
+
+	popup_messages.documents.forEach((popup_message: { $id: string; }) => {
+		user_record.seen_messages.push(popup_message.$id)
+	});
+    await databases.updateDocument(
+        import.meta.env.DB0_ID,
+        "user",
+        user.$id,
+        {"seen_messages": user_record.seen_messages}
+    )
+}
 ---
 <!doctype html>
 <html lang="en">
@@ -47,6 +73,7 @@ if (user) {var profile_picture = "https://cloud.appwrite.io/v1/avatars/initials?
 						<summary>Admin <span class="badge badge-accent">Admin Only</span></summary>
 						<ul>
 						  <li><a href="/admin/dashboard">Dashboard</a></li>
+						  <li><a href="/admin/dashboard/messages">Messages</a></li>
 						</ul>
 					  </details>
 				  </li>
@@ -58,7 +85,41 @@ if (user) {var profile_picture = "https://cloud.appwrite.io/v1/avatars/initials?
 			  <a href="/" class="btn btn-ghost text-xl">SimpleCV {import.meta.env.DEV_INSTANCE == "true" && <div class="tooltip tooltip-bottom" data-tip="This is a development instance. We are not responsible for any data loss from using a development instance. USE AT YOUR OWN RISK!"><div class="badge badge-primary">Development</div></div>}</a>
 			</div>
 			<div class="navbar-end">
-				{user ? <div class="dropdown dropdown-end">
+				{user ? 
+				<div class="dropdown dropdown-end">
+					<div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+						<div class="indicator">
+							<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-5 w-5"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+							</svg>
+							{messages.documents.length > 0 && <span class="badge badge-xs badge-primary indicator-item"></span>}
+						</div>
+					</div>
+					<ul tabindex="0" class="dropdown-content bg-base-200 rounded-box z-[1] mt-3 w-96 p-2 shadow">
+						<h1 class="p-2 font-bold text-2xl text-center">Inbox</h1>
+						{messages.documents.map((message: { $id: string; title: string; from: string; content: string; }) => (
+							<li class="rounded-box hover:bg-base-100 p-2 transition duration-300">
+								<a href={"/account/inbox/" + message.$id}>
+									<h1 class="font-bold text-lg">{message.title}</h1>
+									<p class="text-xs text-gray-500">From {message.from}</p>
+									<p class="mt-1 break-normal">{message.content.length > 90 ? message.content.substring(0, 90) + "..." : message.content}</p>
+								</a>
+							</li>
+						))}
+						{messages.documents.length == 0 && <p class="text-center text-gray-500 italic mb-1">No messages to show.</p>}
+						<a class="btn btn-primary btn-sm w-full mt-2" href="/account/inbox">View All</a>
+					</ul>
+				</div>
+				<div class="dropdown dropdown-end">
 					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
 					  <div class="w-10 rounded-full">
 						<img
@@ -78,11 +139,47 @@ if (user) {var profile_picture = "https://cloud.appwrite.io/v1/avatars/initials?
 					  <li><a href="/account">Manage Account</a></li>
 					  <li><a href="/account/signout">Sign Out</a></li>
 					</ul>
-				</div> : <a class="btn btn-primary" href="/account/signin">Sign In</a>}
+				</div>
+				:
+				<a class="btn btn-primary" href="/account/signin">Sign In</a>
+				}
 			</div>
 		  </div>
 		<!-- Navbar End -->
 		<div class="flex-1">
+			{popup_messages.documents.length > 0 &&
+				<dialog id="popup_modal" class="modal">
+					<div class="modal-box w-full max-w-lg">
+						<div class="carousel w-full">
+							{popup_messages.documents.map((message: {$id: string; title: string; from: string; content: string; }) => (
+								<div id={message.$id} class="carousel-item w-full flex flex-col">
+									<h1 class="font-bold text-3xl">{message.title}</h1>
+									<p class="text-sm text-gray-500">From {message.from}</p>
+									<p class="mt-2 break-normal">{message.content}</p>
+								</div>
+							))}
+						</div>
+						{popup_messages.documents.length > 1 &&
+						<div class="flex w-full justify-center gap-2 pt-9">
+							{popup_messages.documents.map((message: { $id: string; }) => (
+								<a href={"#" + message.$id} class="btn btn-xs btn-circle btn-primary"></a>
+							))}
+						</div>
+						}
+
+						<div class="modal-action">
+							<form method="dialog" class="w-full">
+								<button class="btn w-full">Close</button>
+							</form>
+						</div>
+					</div>
+				</dialog>
+				<script>
+					// @ts-ignore
+					popup_modal.showModal()
+				</script>
+			}
+
 			<slot/>
 
 			{
