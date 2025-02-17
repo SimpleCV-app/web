@@ -1,0 +1,206 @@
+---
+import { ID, Permission, Role } from 'node-appwrite';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createAdminClient } from '../../../server/appwrite';
+
+const { user } = Astro.locals;
+if (!user || !user.labels.includes('admin')) {
+    return Astro.redirect("/");
+}
+
+const { users, databases } = createAdminClient();
+const messages = await databases.listDocuments(
+    import.meta.env.DB0_ID,
+    "messages"
+)
+
+if (Astro.request.method == "POST") {
+    var data = await Astro.request.formData()
+
+    switch (data.get("type")) {
+        case "expire":
+            await databases.updateDocument(
+                import.meta.env.DB0_ID,
+                "messages",
+                data.get("id")!.toString(),
+                {
+                    expire: new Date()
+                }
+            )
+            break;
+        case "delete":
+            await databases.deleteDocument(
+                import.meta.env.DB0_ID,
+                "messages",
+                data.get("id")!.toString()
+            )
+            break;
+        case "create":
+            var permissions: string[] = []
+            for (const [key, value] of data.entries()) {
+                if (key == "recipient") {
+                    if (value.toString() == "_ANY") {
+                        permissions.push(Permission.read(Role.any()))
+                    } else {
+                        permissions.push(Permission.read(Role.user(value.toString())))
+                    }
+                }
+            }
+
+            await databases.createDocument(
+                import.meta.env.DB0_ID,
+                "messages",
+                ID.unique(),
+                {
+                    "from": data.get("from")!.toString(),
+                    "content": data.get("content")!.toString(),
+                    "expire": data.get("expire")!.toString(),
+                    "type": data.get("m_type")!.toString(),
+                    "title": data.get("title")!.toString(),
+                },
+                permissions
+            )
+            break;
+    }
+
+    return Astro.redirect(Astro.url.pathname)
+}
+---
+
+<AdminLayout>
+    <div class="flex items-center justify-center flex-col pt-4">
+        <div class="overflow-x-auto w-max rounded-lg shadow-md bg-base-300 p-3 max-w-8xl mb-4">
+            <h1 class="text-center text-2xl font-bold mt-1">Create Message</h1>
+
+            <form class="grid grid-cols-2 flex mt-2" method="post" id="create_message">
+                <input type="hidden" name="type" value="create"/>
+                <div class="h-max pr-1">
+                    <div class="mb-2 grid grid-cols-2 flex">
+                        <div class="pr-1">
+                            <input class="input w-full" type="text" name="title" placeholder="Title" required/>
+                        </div>
+                        <div class="pl-1">
+                            <input class="input w-full" type="text" name="from" placeholder="From" required/>
+                        </div>
+                    </div>
+                    <textarea name="content" class="textarea w-full h-full" placeholder="Content" rows="10" cols="60" required></textarea>
+                </div>
+                
+                <div class="pl-1">
+                    <select name="m_type" class="select w-full" required>
+                        <option selected>Select a message type...</option>
+                        <option value="message">Message Tab</option>
+                        <option value="popup">Popup</option>
+                    </select>
+
+                    <input class="input w-full mt-2" type="date" name="expire" placeholder="Expire" required/>
+
+                    <button type="button" class="w-full btn mt-2" onclick="recipient_edit.showModal()">Edit Recipients</button>
+
+                    <button type="submit" class="w-full btn btn-primary mt-2">Submit</button>
+                </div>
+            </form>
+
+            <dialog id="recipient_edit" class="modal">
+                <div class="modal-box w-full max-w-5xl">
+                    <h3 class="text-lg font-bold">Select a recipient.</h3>
+                    <div class="overflox-x-auto">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <td></td>
+                                    <td>Name/ID</td>
+                                    <td>Email</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th><input type="checkbox" class="checkbox" name="recipient" form="create_message" value="_ANY"/></th>
+                                    <td>
+                                        <div class="avatar placeholder w-12">
+                                            <div class="bg-neutral text-neutral-content w-16 rounded-full">
+                                                <span class="text-xl">*</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-lg font-bold">All Users</p>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                {users.list().then((response) => {
+                                    return response.users.map((user_record) => (
+                                        <tr>
+                                            <th><input type="checkbox" class="checkbox" name="recipient" form="create_message" value={user_record.$id}/></th>
+                                            <td>
+                                                <div class="avatar w-12">
+                                                        <div class="mask mask-circle h-12 w-12">
+                                                            <img src={"https://cloud.appwrite.io/v1/avatars/initials?name=" + user_record.name} alt="Avatar" />
+                                                        </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <p class="text-lg font-bold">{user_record.name}</p>
+                                                <p>{user_record.$id}</p>
+                                            </td>
+                                            <td>{user_record.email}</td>
+                                        </tr>
+                                    ))
+                                })}
+                            </tbody>
+                            </table>
+                    </div>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+        </div>
+
+        <div class="overflow-x-auto w-max rounded-lg shadow-md bg-base-300 p-3 max-w-8xl">
+            <h1 class="text-center text-2xl font-bold mt-1">Current Messages</h1>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <td>Title</td>
+                        <td>From</td>
+                        <td>Content</td>
+                        <td>Expire Date</td>
+                        <td>Type</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {messages.documents.map((message) => (
+                        <tr>
+                            <th>{message.$id}</th>
+                            <td>{message.title}</td>
+                            <td>{message.from}</td>
+                            <td>{message.content.length > 90 ? message.content.substring(0, 90) + "..." : message.content}</td>
+                            <td>{new Date(message.expire).toDateString()}</td>
+                            <td>{message.type}</td>
+                            <td class="flex flex-row">
+                                <button class="btn btn-primary mr-1" disabled>Manage</a>
+                                
+                                <form method="POST">
+                                    <input type="hidden" name="type" value="expire"/>
+                                    <input type="hidden" name="id" value={message.$id}/>
+                                    <button class="btn btn-error mr-1" type="submit">Expire</button>
+                                </form>
+
+                                <form method="POST">
+                                    <input type="hidden" name="type" value="delete"/>
+                                    <input type="hidden" name="id" value={message.$id}/>
+                                    <button class="btn btn-error" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</AdminLayout>

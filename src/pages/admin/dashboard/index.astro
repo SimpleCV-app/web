@@ -1,6 +1,6 @@
 ---
-import AdminLayout from '../../layouts/AdminLayout.astro';
-import { createAdminClient } from '../../server/appwrite';
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { createAdminClient } from '../../../server/appwrite';
 
 const { user } = Astro.locals;
 if (!user || !user.labels.includes('admin')) {
