@@ -3,6 +3,7 @@ import { Query } from "node-appwrite";
 import { getMeta } from "../server/appwrite";
 
 const meta = await getMeta();
+const { no_footer_gap } = Astro.props;
 
 const { user, databases } = Astro.locals;
 
@@ -22,6 +23,10 @@ if (user) {
 	popup_messages.documents = popup_messages.documents.filter((message: { $id: any; }) => {
 		return !(user_record.seen_messages.includes(message.$id))
 	})
+
+	if (popup_messages == null) {
+		popup_messages = []
+	}
 
 	popup_messages.documents.forEach((popup_message: { $id: string; }) => {
 		user_record.seen_messages.push(popup_message.$id)
@@ -205,8 +210,8 @@ if (user) {
 			}
 			</div>
 		<!-- Footer Start -->
-		<div class="mt-8">
-			<footer class="footer footer-center bg-base-200 text-base-content rounded p-10">
+		<div class={!no_footer_gap ? "mt-8" : ""}>
+			<footer class="footer footer-center bg-base-300 text-base-content rounded p-10">
 				<nav class="grid grid-flow-col gap-4">
 				<a class="link link-hover">About us</a>
 				<a class="link link-hover">Contact</a>
