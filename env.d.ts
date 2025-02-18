@@ -17,6 +17,7 @@ interface ImportMetaEnv {
   readonly DB0_ID: string;
   readonly DEV_INSTANCE: string;
   readonly SIGNUP_DISABLED: string;
+  readonly INDEX_ONLY: string;
 }
 
 interface ImportMeta {
