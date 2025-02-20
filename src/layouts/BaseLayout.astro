@@ -24,8 +24,8 @@ if (user) {
 		return !(user_record.seen_messages.includes(message.$id))
 	})
 
-	if (popup_messages == null) {
-		popup_messages = []
+	if (popup_messages.documents == null) {
+		popup_messages.documents = []
 	}
 
 	popup_messages.documents.forEach((popup_message: { $id: string; }) => {
