@@ -24,10 +24,6 @@ if (user) {
 		return !(user_record.seen_messages.includes(message.$id))
 	})
 
-	if (popup_messages.documents == null) {
-		popup_messages.documents = []
-	}
-
 	popup_messages.documents.forEach((popup_message: { $id: string; }) => {
 		user_record.seen_messages.push(popup_message.$id)
 	});
@@ -152,7 +148,7 @@ if (user) {
 		  </div>
 		<!-- Navbar End -->
 		<div class="flex-1">
-			{popup_messages.documents.length > 0 &&
+			{user && popup_messages.documents.length > 0 &&
 				<dialog id="popup_modal" class="modal">
 					<div class="modal-box w-full max-w-lg">
 						<div class="carousel w-full">
