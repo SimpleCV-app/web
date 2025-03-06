@@ -185,11 +185,16 @@ if (Astro.request.method == "POST") {
                             <td class="flex flex-row">
                                 <button class="btn btn-primary mr-1" disabled>Manage</a>
                                 
-                                <form method="POST">
-                                    <input type="hidden" name="type" value="expire"/>
-                                    <input type="hidden" name="id" value={message.$id}/>
-                                    <button class="btn btn-error mr-1" type="submit">Expire</button>
-                                </form>
+                                {
+                                    new Date(message.expire) > new Date() ?
+                                    <form method="POST">
+                                        <input type="hidden" name="type" value="expire"/>
+                                        <input type="hidden" name="id" value={message.$id}/>
+                                        <button class="btn btn-error mr-1" type="submit">Expire</button>
+                                    </form>
+                                    :
+                                    <button class="btn btn-error mr-1" disabled>Expired</button>
+                                }
 
                                 <form method="POST">
                                     <input type="hidden" name="type" value="delete"/>
