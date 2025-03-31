@@ -1,6 +1,7 @@
 ---
 import { Query } from "node-appwrite";
 import AuthLayout from "../../../layouts/AuthLayout.astro";
+import { marked } from 'marked';
 
 const { user, databases } = Astro.locals;
 const { message_id } = Astro.params!;
@@ -25,7 +26,7 @@ const read_messages = (await databases.listDocuments(import.meta.env.DB0_ID, "me
                         <a href={"/account/inbox/" + message.$id}>
                             <h1 class="font-bold text-4xl">{message.title}</h1>
                             <p class="text-sm text-gray-500">From {message.from}</p>
-                            <p class="mt-1 break-normal">{message.content.length > 90 ? message.content.substring(0, 90) + "..." : message.content}</p>
+                            <p class="mt-1 break-normal" set:html={message.content.length > 90 ? marked.parse(message.content.substring(0, 90) + "...", {breaks: true}) : marked.parse(message.content, {breaks: true})}></p>
                         </a>
                     </li>
                 ))}

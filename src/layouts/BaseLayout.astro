@@ -1,6 +1,8 @@
 ---
 import { Query } from "node-appwrite";
 import { getMeta } from "../server/appwrite";
+import '../styles/app.css';
+import { marked } from 'marked';
 
 const meta = await getMeta();
 const { no_footer_gap } = Astro.props;
@@ -112,7 +114,7 @@ if (user) {
 								<a href={"/account/inbox/" + message.$id}>
 									<h1 class="font-bold text-lg">{message.title}</h1>
 									<p class="text-xs text-gray-500">From {message.from}</p>
-									<p class="mt-1 break-normal">{message.content.length > 90 ? message.content.substring(0, 90) + "..." : message.content}</p>
+									<p class="mt-1 break-normal" set:html={message.content.length > 90 ? marked.parse(message.content.substring(0, 90) + "...", {breaks: true}) : marked.parse(message.content, {breaks: true})}></p>
 								</a>
 							</li>
 						))}
@@ -156,7 +158,7 @@ if (user) {
 								<div id={message.$id} class="carousel-item w-full flex flex-col">
 									<h1 class="font-bold text-3xl">{message.title}</h1>
 									<p class="text-sm text-gray-500">From {message.from}</p>
-									<p class="mt-2 break-normal">{message.content}</p>
+									<p class="mt-2 break-normal" set:html={marked.parse(message.content, {breaks: true})}></p>
 								</div>
 							))}
 						</div>
@@ -187,7 +189,7 @@ if (user) {
 				meta.alert_message != null &&
 				<div class="flex justify-center">
 					<div class="fixed bottom-10">
-						<div role="alert" class="alert alert-warning w-max hover:scale-125 transition duration-300">
+						<div role="alert" class="alert alert-warning w-max hover:scale-105 transition duration-300">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								class="h-6 w-6 shrink-0 stroke-current"
@@ -209,11 +211,13 @@ if (user) {
 		<div class={!no_footer_gap ? "mt-8" : ""}>
 			<footer class="footer footer-center bg-base-300 text-base-content rounded p-10">
 				<nav class="grid grid-flow-col gap-4">
-				<a class="link link-hover">About us</a>
-				<a class="link link-hover">Contact</a>
+					<a class="link link-hover">About us</a>
+					<a class="link link-hover">Contact</a>
 				</nav>
+
 				<aside>
-				<p>Copyright © {new Date().getFullYear()} - Alfie Barlow</p>
+					<p>Copyright © {new Date().getFullYear()} - Alfie Barlow</p>
+					<p>Version: UNKNOWN</p>
 				</aside>
 			</footer>
 		</div>

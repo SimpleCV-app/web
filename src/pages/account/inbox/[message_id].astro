@@ -1,6 +1,7 @@
 ---
 import { Query } from "node-appwrite";
 import AuthLayout from "../../../layouts/AuthLayout.astro";
+import { marked } from 'marked';
 
 const { user, databases } = Astro.locals;
 const { message_id } = Astro.params!;
@@ -30,7 +31,7 @@ if (!(user_record.seen_messages.includes(message_id!.toString()))) {
         <div class="overflow-x-auto w-max rounded-lg shadow-md bg-base-300 p-6 max-w-xl">
             <h1 class="font-bold text-4xl">{message.title}</h1>
             <p class="text-sm text-gray-500">From {message.from}</p>
-            <p class="mt-1 break-normal">{message.content}</p>
+            <p class="mt-1 break-normal" set:html={marked.parse(message.content, {breaks: true})}></p>
 
             <a class="btn btn-block mt-6" href="/account/inbox">Back To Inbox</a>
         </div>
