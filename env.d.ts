@@ -18,6 +18,7 @@ interface ImportMetaEnv {
   readonly DEV_INSTANCE: string;
   readonly SIGNUP_DISABLED: string;
   readonly INDEX_ONLY: string;
+  readonly url: string;
 }
 
 interface ImportMeta {

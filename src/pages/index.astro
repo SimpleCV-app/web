@@ -2,5 +2,277 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout>
+<BaseLayout no_footer_gap=true>
+    <div class="flex items-center justify-center flex-col">
+        <div class="hero w-full min-h-[calc(100vh-64px)]">
+            <div class="hero-content flex flex-col">
+                <div class="max-w-md relative">
+                    <h1 class="text-5xl font-bold"><span>Simple</span>CV</h1>
+                    <p class="py-6">
+                        Create professional looking CVs that gets you noticed. 
+                        Our easy-to-use, open source tool helps you create polished CVs in as little as 10 minutes. 
+                        Choose from professional looking templates and showcase your skills and experience with style.
+                    </p>
+
+                    <div class="grid grid-cols-2 flex">
+                        <div class="pr-1">
+                            <a class="btn btn-primary w-full" href="/account/signup">Sign Up</a>
+                        </div>
+                        <div class="pl-1">
+                            <a class="btn btn-neutral w-full" href="/account/signin">Log In</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div role="alert" class="alert alert-info mt-6">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      class="h-6 w-6 shrink-0 stroke-current">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>SimpleCV is still in early development and not all features are implemented at the moment. Want to see our progress? Check out our <a target="_blank" class="link" href="https://github.com/SimpleCV-app">Github</a>.</span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="bg-base-200 w-full flex items-center justify-center h-max min-h-scren p-6">
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-base-300 p-4 rounded-lg max-w-md">
+                    <h1 class="text-2xl text-center font-bold mb-1">Professional looking templates</h1>
+                    <p>
+                        SimpleCV offers a wide selection of professional looking templates. 
+                        Whether you're looking for something with a splash of colour or something more traditional, you'll find a template that suits your needs.
+                    </p>
+                </div>
+                <div class="bg-base-300 p-4 rounded-lg max-w-md">
+                    <h1 class="text-2xl text-center font-bold mb-1">Modular Design</h1>
+                    <p class="italic">
+                        This section has not yet been written. Dont worry! We're working on it.
+                    </p>
+                </div>
+                <div class="bg-base-300 p-4 rounded-lg max-w-md">
+                    <h1 class="text-2xl text-center font-bold mb-1">Intuitive Interface</h1>
+                    <p>
+                        CV creation should be simple and stress-free. 
+                        Our intuitive interface makes it easy to build your CV in as little as 10 minutes. 
+                        No coding or design experience is required.
+                    </p>
+                </div>
+
+                <div class="bg-base-300 p-4 rounded-lg max-w-md">
+                    <h1 class="text-2xl text-center font-bold mb-1">Tailored to you</h1>
+                    <p>
+                        Your CV should be a reflection of your individual skills and experience. 
+                        SimpleCV empowers you to personalize your CV. 
+                        Tailor your CV to each job application to highlight the skills and qualifications most relevant to the role.
+                    </p>
+                </div>
+                <div class="bg-base-300 p-4 rounded-lg max-w-md">
+                    <h1 class="text-2xl text-center font-bold mb-1">Free of charge</h1>
+                    <p>
+                        We believe everyone should have access to the tools they need to create a professional CV. 
+                        SimpleCV can be used completely free of charge, with no hidden fees or subscriptions. 
+                        Create up to 3 Digital CVs or as many physical CVs as you want.
+                    </p>
+                </div>
+                <div class="bg-base-300 p-4 rounded-lg max-w-md">
+                    <h1 class="text-2xl text-center font-bold mb-1">Fully Open Source</h1>
+                    <p>
+                        SimpleCV is fully open source, meaning the code is publicly available for anyone to view, use, and contribute to. 
+                        This transparency ensures SimpleCV is constantly evolving and improving. 
+                        Check out our <a target="_blank" class="link link-primary" href="https://github.com/SimpleCV-app">Github</a> to see our source code.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full">
+            <div class="hero w-full py-3">
+                <div class="hero-content h-full w-3/4">
+                    <div class="join bg-base-300 h-full w-full ">
+                        <div class="mockup-browser bg-base-300 h-full w-1/2 hidden lg:block">
+                            <div class="mockup-browser-toolbar">
+                                <div class="input">https://{import.meta.env.URL}</div>
+                            </div>
+                            <div class="h-full flex items-center justify-center bg-gray-800">
+                                Feature coming in a future release.
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-1/2 m-6 h-max">
+                            <h1 class="text-4xl font-bold">Create your own Digital CV</h1>
+                            <p class="mt-4">
+                                Beyond traditional CVs, we allow you to create your own Digital CVs. 
+                                These interactive profiles go beyond static documents, allowing you to showcase your skills, qualifications, and experiences intuitively. 
+                                Easily share your Digital CV with potential employers via a unique URL, giving them a comprehensive and engaging view of you. 
+                                Best of all, we host your Digital CV on our servers completely free of charge.
+                            </p>
+                            <ul class="list-disc ml-6 mt-2">
+                                <li>
+                                    <span class="font-bold">Interactive</span> and <span class="font-bold">engaging</span> to help you stand out to potential employers
+                                </li>
+                                <li>
+                                    Instantly <span class="font-bold">share</span> your Digital CV via its unique URL.
+                                </li>
+                                <li>
+                                    Accessible from <span class="font-bold">any device</span> with an internet connection, making it convenient for employers to view your profile anytime.
+                                </li>
+                                <li>
+                                    Details <span class="font-bold">analytics</span> from your Digital CV. Monitor page views and links clicked.
+                                </li>
+                                <li>
+                                    Share your CV with employers <span class="font-bold">across the globe</span>!
+                                </li>
+                                <li>
+                                    <span class="font-bold">Save money</span> by eliminating printing costs with a Digital CV.
+                                </li>
+                                <li>
+                                    <span class="font-bold">Stand out</span> compared to traditional CVs.
+                                </li>
+                            </ul>
+                            <p class="mt-6">Interested? <a class="link" href="/account/signup">Create an account today!</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-base-200 w-full flex items-center justify-center h-max min-h-scren p-6">
+            <div>
+                <h1 class="text-4xl font-bold text-center mb-9">v1.0.0 Roadmap</h1>
+                <ul class="timeline sm:timeline-vertical md:timeline-horizontal">
+                    <li>
+                        <div class="timeline-start timeline-box">Web Dashboard</div>
+                        <div class="timeline-end pt-2">17/02/2025</div>
+                        <div class="timeline-middle">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            class="text-primary h-5 w-5">
+                            <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clip-rule="evenodd" />
+                        </svg>
+                        </div>
+                        <hr class="bg-primary animate-pulse" />
+                    </li>
+
+                    <li>
+                        <hr />
+                        <div class="timeline-end timeline-box">Digital CVs</div>
+                        <div class="timeline-middle">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            class="h-5 w-5">
+                            <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clip-rule="evenodd" />
+                        </svg>
+                        </div>
+                        <hr />
+                    </li>
+
+                    <li>
+                        <hr />
+                        <div class="timeline-start timeline-box">Standard CVs</div>
+                        <div class="timeline-middle">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            class="h-5 w-5">
+                            <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clip-rule="evenodd" />
+                        </svg>
+                        </div>
+                        <hr />
+                    </li>
+
+                    <li>
+                        <hr />
+                        <div class="timeline-end timeline-box">Public Beta Release</div>
+                        <div class="timeline-middle">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            class="h-5 w-5">
+                            <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clip-rule="evenodd" />
+                        </svg>
+                        </div>
+                        <hr />
+                    </li>
+
+                    <li>
+                        <hr />
+                        <div class="timeline-start timeline-box">Mobile Optimisation</div>
+                        <div class="timeline-middle">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            class=" h-5 w-5">
+                            <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clip-rule="evenodd" />
+                        </svg>
+                        </div>
+                        <hr />
+                    </li>
+
+                    <li>
+                        <hr />
+                        <div class="timeline-end timeline-box">Optimisation & Bug Fixes</div>
+                        <div class="timeline-middle">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            class="h-5 w-5">
+                            <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clip-rule="evenodd" />
+                        </svg>
+                        </div>
+                        <hr />
+                    </li>
+
+                    <li>
+                        <hr />
+                        <div class="timeline-start timeline-box">Full Release</div>
+                        <div class="timeline-middle">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            class="h-5 w-5">
+                            <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                            clip-rule="evenodd" />
+                        </svg>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </BaseLayout>
