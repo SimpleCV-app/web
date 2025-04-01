@@ -71,11 +71,11 @@ if (Astro.request.method === "POST") {
                 <span class="badge m-auto text-lg p-3">{user.$id}</span>
             </div>
             <div>
-                <div class="grid grid-cols-2 flex-col">
+                <div class="grid grid-cols-2 flex-col pt-2">
                     <!-- Email -->
                     <div class="pr-3">
-                        <div class="label">
-                            <span class="label-text">
+                        <label class="label flex justify-between pb-1">
+                            <span>
                                 Email 
                                 {
                                     user.emailVerification ? 
@@ -83,12 +83,12 @@ if (Astro.request.method === "POST") {
                                     :
                                     <a href="/account/verification">
                                         <div class="tooltip" data-tip="Verify your email.">
-                                            <span class="badge badge-error">Unverified</span>
+                                            <span class="badge badge-sm badge-error">Unverified</span>
                                         </div>
                                     </a>
                                 }
                             </span>
-                        </div>
+                        </label>
                         <input type="text" placeholder={user.email} class="input input-bordered w-max max-w-xs" disabled />
                         <button class="btn btn-primary" onclick="email_modal.showModal()">Change</button>
 
@@ -118,11 +118,12 @@ if (Astro.request.method === "POST") {
                         </dialog>
                     </div>
                     <!-- Name -->
-                    <div>
-                        <div class="label">
-                            <span class="label-text">Name</span>
-                        </div>
-
+                    <div>                        
+                        <label class="label flex justify-between pb-1">
+                            <span>
+                                Name
+                            </span>
+                        </label>
                         <input type="text" placeholder={user.name} class="input input-bordered w-max max-w-xs" disabled />
                         <button class="btn btn-primary" onclick="name_modal.showModal()">Change</button>
 
@@ -149,9 +150,11 @@ if (Astro.request.method === "POST") {
                     </div>
                     <!-- Password -->
                     <div class="pr-3">
-                        <div class="label">
-                            <span class="label-text">Password</span>
-                        </div>
+                        <label class="label flex justify-between pb-1">
+                            <span>
+                                Password
+                            </span>
+                        </label>
                         <button class="btn btn-primary w-full py-2 px-4" onclick="password_modal.showModal()">Change</button>
 
                         <dialog id="password_modal" class="modal">
@@ -181,9 +184,11 @@ if (Astro.request.method === "POST") {
                     </div>
                     <!-- Delete -->
                     <div>
-                        <div class="label">
-                            <span class="label-text">Delete</span>
-                        </div>
+                        <label class="label flex justify-between pb-1">
+                            <span>
+                                Delete
+                            </span>
+                        </label>
 
                         <button class="btn btn-error w-full" onclick="delete_modal.showModal()">Delete Account</button>
 

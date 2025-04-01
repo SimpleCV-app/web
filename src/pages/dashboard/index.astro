@@ -195,30 +195,24 @@ if (Astro.request.method == "POST") {
               <h3 class="text-lg font-bold mb-1">Create a new page.</h3>
               
               <form method="POST">
-                <label class="form-control w-full">
-                  <div class="label">
-                    <span class="label-text">Name</span>
-                  </div>
-                  <input type="text" name="page_name" class="input input-bordered" required/>
-                </label>
+                <fieldset class="fieldset w-full">
+                  <label class="fieldset-label">Name</label>
+                  <input type="text" name="page_name" class="input input-bordered w-full" required/>
+                </fieldset>
 
-                <label class="form-control w-full">
-                  <div class="label">
-                    <span class="label-text">Cover Letter</span>
-                  </div>
-                  <textarea name="page_cover_letter" class="textarea textarea-bordered" rows="10" cols="30" required></textarea>
-                </label>
+                <fieldset class="fieldset w-full">
+                  <label class="fieldset-label">Cover Letter</label>
+                  <textarea name="page_cover_letter" class="textarea textarea-bordered w-full" rows="10" cols="60" required></textarea>
+                </fieldset>
 
-                <label class="form-control w-full">
-                  <div class="label">
-                    <span class="label-text">Type</span>
-                  </div>
+                <fieldset class="fieldset w-full">
+                  <label class="fieldset-label">Type</label>
                   <select name="page_type" class="select select-bordered w-full mt-2">
                     <option selected disabled>Please select a type</option>
                     <option value="physical">Standard CV</option>
                     <option value="digital">Digital CV</option>
                   </select>
-                </label>
+                </fieldset>
 
                 <input type="hidden" name="type" id="type" value="page_add"/>
                 <button type="submit" class="btn btn-primary w-full mt-2">Add</button>
@@ -271,38 +265,30 @@ if (Astro.request.method == "POST") {
                   <h3 class="text-lg font-bold mb-1">Add education history.</h3>
                   
                   <form method="POST">
-                    <label class="form-control w-full max-w-xs">
-                      <div class="label">
-                        <span class="label-text">Name</span>
-                      </div>
-                      <input type="text" name="education_name" class="input input-bordered" required/>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label"><span>Name</span></label>
+                      <input type="text" name="education_name" id="education_name" class="input input-bordered w-full" required/>
+                    </fieldset>
 
-                    <label class="form-control w-full max-w-xs">
-                      <div class="label">
-                        <span class="label-text">Description</span>
-                      </div>
-                      <textarea name="education_description" class="textarea textarea-bordered" rows="10" cols="30" required></textarea>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Description</label>
+                      <textarea name="education_description" class="textarea textarea-bordered w-full" rows="10" cols="60" required></textarea>
+                    </fieldset>
 
-                    <label class="form-control w-full max-w-xs">
-                      <div class="label">
-                        <span class="label-text">Start Year</span>
-                      </div>
-                      <input type="number" min="1900" max={new Date().getFullYear()+10} name="education_start_year" class="input input-bordered" required/>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Start Year</label>
+                      <input type="number" min="1900" max={new Date().getFullYear()+10} name="education_start_year" class="input input-bordered w-full" required/>
+                    </fieldset>
 
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">End Year</span>
-                      </div>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">End Year</label>
                       <div class="flex ">
                         <input type="number" min="1900" max={new Date().getFullYear()+10} name="education_end_year" id="education_end_year" class="w-full input input-bordered" value={education.end_year}/>
                         <div class="tooltip" data-tip="Present">
                           <input type="checkbox" class="checkbox h-[3rem] w-[3rem]  ml-1" name="education_present" id="education_present" />
                         </div>
                       </div>
-                    </label>
+                    </fieldset>
 
                     <input type="hidden" name="type" id="type" value="education_add"/>
                     <button type="submit" class="btn btn-primary w-full mt-2">Add</button>
@@ -351,38 +337,30 @@ if (Astro.request.method == "POST") {
                         <h3 class="text-lg font-bold mb-1">Edit an education record.</h3>
                         
                         <form method="POST">
-                          <label class="form-control w-full max-w-xs">
-                            <div class="label">
-                              <span class="label-text">Name</span>
-                            </div>
-                            <input type="text" name="education_name" class="input input-bordered" value={education.name} required/>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Name</label>
+                            <input type="text" name="education_name" class="input input-bordered w-full" value={education.name} required/>
+                          </fieldset>
 
-                          <label class="form-control w-full max-w-xs">
-                            <div class="label">
-                              <span class="label-text">Description</span>
-                            </div>
-                            <textarea name="education_description" class="textarea textarea-bordered" rows="10" cols="30" required>{education.description}</textarea>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Description</label>
+                            <textarea name="education_description" class="textarea textarea-bordered w-full" rows="10" cols="60" required>{education.description}</textarea>
+                          </fieldset>
 
-                          <label class="form-control w-full max-w-xs">
-                            <div class="label">
-                              <span class="label-text">Start Year</span>
-                            </div>
-                            <input type="number" min="1900" max={new Date().getFullYear()+10} name="education_start_year" class="input input-bordered" value={education.start_year} required/>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Start Year</label>
+                            <input type="number" min="1900" max={new Date().getFullYear()+10} name="education_start_year" class="input input-bordered w-full" value={education.start_year} required/>
+                          </fieldset>
 
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">End Year</span>
-                            </div>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">End Year</label>
                             <div class="flex ">
                               <input type="number" min="1900" max={new Date().getFullYear()+10} name="education_end_year" id="education_end_year" class="w-full input input-bordered" value={education.end_year}/>
                               <div class="tooltip" data-tip="Present">
                                 <input type="checkbox" class="checkbox h-[3rem] w-[3rem]  ml-1" name="education_present" id="education_present" checked={education.present} />
                               </div>
                             </div>
-                          </label>
+                          </fieldset>
 
                           <input type="hidden" name="type" id="type" value="education_edit"/>
                           <input type="hidden" name="education_id" value={education.$id}/>
@@ -408,45 +386,35 @@ if (Astro.request.method == "POST") {
                   <h3 class="text-lg font-bold mb-1">Add work experience history.</h3>
                   
                   <form method="POST">
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">Job title</span>
-                      </div>
-                      <input type="text" name="work_job_title" class="input input-bordered" required/>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Job title</label>
+                      <input type="text" name="work_job_title" class="input input-bordered w-full" required/>
+                    </fieldset>
 
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">Job Description</span>
-                      </div>
-                      <textarea name="work_job_description" class="textarea textarea-bordered" rows="10" cols="30" required></textarea>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Job Description</label>
+                      <textarea name="work_job_description" class="textarea textarea-bordered w-full" rows="10" cols="60" required></textarea>
+                    </fieldset>
 
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">Company Name</span>
-                      </div>
-                      <input type="text" name="work_company_name" class="input input-bordered" required/>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Company Name</label>
+                      <input type="text" name="work_company_name" class="input input-bordered w-full" required/>
+                    </fieldset>
 
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">Start Date</span>
-                      </div>
-                      <input type="text" minlength="6" maxlength="7" placeholder={new Date().getMonth()+1 + "/" + new Date().getFullYear()} pattern="[0-9]{1,2}[\/][0-9]{4}" name="work_start_date" class="input input-bordered" required/>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Start Date</label>
+                      <input type="text" minlength="6" maxlength="7" placeholder={new Date().getMonth()+1 + "/" + new Date().getFullYear()} pattern="[0-9]{1,2}[\/][0-9]{4}" name="work_start_date" class="input input-bordered w-full" required/>
+                    </fieldset>
 
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">End Date</span>
-                      </div>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">End Date</label>
                       <div class="flex w-full">
                         <input type="text" minlength="6" maxlength="7" placeholder={new Date().getMonth()+1 + "/" + new Date().getFullYear()} pattern="[0-9]{1,2}[\/][0-9]{4}" name="work_end_date" class="input input-bordered w-full"/>
                         <div class="tooltip" data-tip="Present">
                           <input type="checkbox" class="checkbox h-[3rem] w-[3rem]  ml-1" name="work_present"/>
                         </div>
                       </div>
-                    </label>
+                    </fieldset>
 
                     <input type="hidden" name="type" id="type" value="work_add"/>
                     <button type="submit" class="btn btn-primary w-full mt-2">Add</button>
@@ -491,45 +459,35 @@ if (Astro.request.method == "POST") {
                         <h3 class="text-lg font-bold mb-1">Edit a work experience record.</h3>
                         
                         <form method="POST">
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">Job title</span>
-                            </div>
-                            <input type="text" name="work_job_title" class="input input-bordered" value={work.job_title} required/>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Job title</label>
+                            <input type="text" name="work_job_title" class="input input-bordered w-full" value={work.job_title} required/>
+                          </fieldset>
 
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">Job Description</span>
-                            </div>
-                            <textarea name="work_job_description" class="textarea textarea-bordered" rows="10" cols="30" required>{work.job_description}</textarea>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Job Description</label>
+                            <textarea name="work_job_description" class="textarea textarea-bordered w-full" rows="10" cols="60" required>{work.job_description}</textarea>
+                          </fieldset>
 
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">Company Name</span>
-                            </div>
-                            <input type="text" name="work_company_name" class="input input-bordered" value={work.company_name} required/>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Company Name</label>
+                            <input type="text" name="work_company_name" class="input input-bordered w-full" value={work.company_name} required/>
+                          </fieldset>
 
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">Start Date</span>
-                            </div>
-                            <input type="text" minlength="6" maxlength="7" placeholder={new Date().getMonth()+1 + "/" + new Date().getFullYear()} pattern="[0-9]{1,2}[\/][0-9]{4}" name="work_start_date" class="input input-bordered" value={work.start_date} required/>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Start Date</label>
+                            <input type="text" minlength="6" maxlength="7" placeholder={new Date().getMonth()+1 + "/" + new Date().getFullYear()} pattern="[0-9]{1,2}[\/][0-9]{4}" name="work_start_date" class="input input-bordered w-full" value={work.start_date} required/>
+                          </fieldset>
 
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">End Date</span>
-                            </div>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">End Date</label>
                             <div class="flex w-full">
                               <input type="text" minlength="6" maxlength="7" placeholder={new Date().getMonth()+1 + "/" + new Date().getFullYear()} pattern="[0-9]{1,2}[\/][0-9]{4}" name="work_end_date" class="input input-bordered w-full" value={work.end_date} required/>
                               <div class="tooltip" data-tip="Present">
                                 <input type="checkbox" class="checkbox h-[3rem] w-[3rem]  ml-1" name="work_present" checked={work.present} />
                               </div>
                             </div>
-                          </label>
+                          </fieldset>
 
                           <input type="hidden" name="type" id="type" value="work_edit"/>
                           <input type="hidden" name="work_id" value={work.$id}/>
@@ -650,40 +608,30 @@ if (Astro.request.method == "POST") {
                   <h3 class="text-lg font-bold mb-1">Edit a reference.</h3>
                   
                   <form method="POST">
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">Job title</span>
-                      </div>
-                      <input type="text" name="reference_job_title" class="input input-bordered" required/>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Job title</label>
+                      <input type="text" name="reference_job_title" class="input input-bordered w-full" required/>
+                    </fieldset>
 
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">Company Name</span>
-                      </div>
-                      <input type="text" name="reference_company_name" class="input input-bordered" required/>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Company Name</label>
+                      <input type="text" name="reference_company_name" class="input input-bordered w-full" required/>
+                    </fieldset>
 
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">Name</span>
-                      </div>
-                      <input type="text" name="reference_name" class="input input-bordered" required/>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Name</label>
+                      <input type="text" name="reference_name" class="input input-bordered w-full" required/>
+                    </fieldset>
 
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">Reference Email</span>
-                      </div>
-                      <input type="email" name="reference_email" class="input input-bordered"/>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Reference Email</label>
+                      <input type="email" name="reference_email" class="input input-bordered w-full"/>
+                    </fieldset>
 
-                    <label class="form-control w-full">
-                      <div class="label">
-                        <span class="label-text">Reference Phone Number</span>
-                      </div>
-                      <input type="text" name="reference_phone" class="input input-bordered" pattern="0[789][0-9]{9}"/>
-                    </label>
+                    <fieldset class="fieldset w-full">
+                      <label class="fieldset-label">Reference Phone Number</label>
+                      <input type="text" name="reference_phone" class="input input-bordered w-full" pattern="0[789][0-9]{9}"/>
+                    </fieldset>
 
                     <input type="hidden" name="type" id="type" value="reference_add"/>
                     <button type="submit" class="btn btn-primary w-full mt-2">Save</button>
@@ -730,40 +678,30 @@ if (Astro.request.method == "POST") {
                         <h3 class="text-lg font-bold mb-1">Edit a reference.</h3>
                         
                         <form method="POST">
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">Job title</span>
-                            </div>
-                            <input type="text" name="reference_job_title" class="input input-bordered" value={reference.job_title} required/>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Job title</label>
+                            <input type="text" name="reference_job_title" class="input input-bordered w-full" value={reference.job_title} required/>
+                          </fieldset>
 
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">Company Name</span>
-                            </div>
-                            <input type="text" name="reference_company_name" class="input input-bordered" value={reference.company_name} required/>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Company Name</label>
+                            <input type="text" name="reference_company_name" class="input input-bordered w-full" value={reference.company_name} required/>
+                          </fieldset>
 
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">Name</span>
-                            </div>
-                            <input type="text" name="reference_name" class="input input-bordered" value={reference.name} required/>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Name</label>
+                            <input type="text" name="reference_name" class="input input-bordered w-full" value={reference.name} required/>
+                          </fieldset>
 
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">Reference Email</span>
-                            </div>
-                            <input type="email" name="reference_email" class="input input-bordered" value={reference.contact_email}/>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Reference Email</label>
+                            <input type="email" name="reference_email" class="input input-bordered w-full" value={reference.contact_email}/>
+                          </fieldset>
 
-                          <label class="form-control w-full">
-                            <div class="label">
-                              <span class="label-text">Reference Phone Number</span>
-                            </div>
-                            <input type="text" name="reference_phone" class="input input-bordered" value={reference.contact_phone} pattern="0[789][0-9]{9}"/>
-                          </label>
+                          <fieldset class="fieldset w-full">
+                            <label class="fieldset-label">Reference Phone Number</label>
+                            <input type="text" name="reference_phone" class="input input-bordered w-full" value={reference.contact_phone} pattern="0[789][0-9]{9}"/>
+                          </fieldset>
 
                           <input type="hidden" name="type" id="type" value="reference_edit"/>
                           <input type="hidden" name="reference_id" value={reference.$id}/>
